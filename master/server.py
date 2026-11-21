@@ -15,6 +15,11 @@ PORT = 50051
 HEARTBEAT_TIMEOUT = 10          # detik tanpa heartbeat = node dianggap mati
 MAX_MSG = 16 * 1024 * 1024      # naikkan batas 4 MB bawaan gRPC
 
+CHANNEL_OPTS = [
+    ("grpc.max_send_message_length", MAX_MSG),
+    ("grpc.max_receive_message_length", MAX_MSG),
+]
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s.%(msecs)03d [master] %(message)s",
@@ -98,6 +103,9 @@ class MasterService(pb_grpc.MasterServiceServicer):
 
             self.state.files[request.filename] = {
                 "file_size": request.file_size,
+                "chunk_size": request.chunk_size,
+                "rf": rf,
+                "strategy": strategy_name,
                 "committed": False,
                 "chunks": chunks,
             }
@@ -137,27 +145,72 @@ class MasterService(pb_grpc.MasterServiceServicer):
             return pb.GetChunkLocationsResponse(ok=True, file_size=f["file_size"], chunks=chunks)
 
 
+def rereplicate(state, dead_node_id, t_detect):
+    """Pulihkan chunk yang kehilangan replika akibat node mati."""
+    tasks = []   # (chunk, sumber, tujuan, file)
+    with state.lock:
+        alive = state.alive_nodes()
+        alive_addr = {n.address for n in alive}
+        for fname, f in state.files.items():
+            if not f["committed"]:
+                continue
+            strategy = state.get_strategy(f["strategy"])
+            for c in f["chunks"]:
+                live = [a for a in c["nodes"] if a in alive_addr]
+                missing = f["rf"] - len(live)
+                if missing <= 0 or not live:
+                    continue   # tidak perlu dipulihkan, atau semua replika hilang
+                candidates = [n for n in alive if n.address not in c["nodes"]]
+                if len(candidates) < missing:
+                    continue
+                targets = strategy.choose(candidates, missing, f["chunk_size"])
+                for t in targets:
+                    tasks.append((c, live[0], t.address))
+
+    log.info("re-replication: %d chunk perlu dipulihkan (node mati: %s)",
+             len(tasks), dead_node_id)
+    ok_count = 0
+    for c, source, target in tasks:
+        try:
+            with grpc.insecure_channel(source, options=CHANNEL_OPTS) as ch:
+                stub = pb_grpc.DataNodeServiceStub(ch)
+                r = stub.ReplicateChunk(
+                    pb.ReplicateChunkRequest(chunk_id=c["chunk_id"], target_address=target),
+                    timeout=30)
+            if r.ok:
+                with state.lock:
+                    # ganti alamat node mati dengan node baru di metadata
+                    c["nodes"] = [a for a in c["nodes"] if a in
+                                  {n.address for n in state.alive_nodes()}] + [target]
+                ok_count += 1
+        except grpc.RpcError as e:
+            log.warning("gagal replikasi %s: %s", c["chunk_id"], e.code())
+
+    durasi = time.time() - t_detect
+    log.info("PEMULIHAN SELESAI: %d/%d chunk, waktu pemulihan = %.3f detik",
+             ok_count, len(tasks), durasi)
+    
 def monitor_loop(state):
-    """Cek tiap 2 detik: node yang lama tidak heartbeat ditandai mati."""
     while True:
         time.sleep(2)
         now = time.time()
+        newly_dead = []
         with state.lock:
             for node in state.nodes.values():
                 if node.alive and now - node.last_heartbeat > HEARTBEAT_TIMEOUT:
                     node.alive = False
+                    newly_dead.append(node.node_id)
                     log.warning("NODE MATI terdeteksi: %s", node.node_id)
-                    # TODO langkah berikutnya: picu re-replication di sini
+        for nid in newly_dead:
+            threading.Thread(target=rereplicate, args=(state, nid, time.time()),
+                             daemon=True).start()
 
 
 def serve():
     state = MasterState()
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=10),
-        options=[
-            ("grpc.max_send_message_length", MAX_MSG),
-            ("grpc.max_receive_message_length", MAX_MSG),
-        ],
+        options=CHANNEL_OPTS
     )
     pb_grpc.add_MasterServiceServicer_to_server(MasterService(state), server)
     server.add_insecure_port(f"0.0.0.0:{PORT}")   # 0.0.0.0, bukan localhost
