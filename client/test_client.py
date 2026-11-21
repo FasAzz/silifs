@@ -124,5 +124,25 @@ class TestSiliFSClient(unittest.TestCase):
         self.assertEqual(downloaded_data, self.file_content)
 
 
+class TestClientCLI(unittest.TestCase):
+    def test_cli_parser(self):
+        from client.cli import build_parser
+
+        parser = build_parser()
+        # Test upload parser
+        args = parser.parse_args(["upload", "sample.txt", "--rf", "3", "--chunk-mb", "8", "--strategy", "capacity_aware"])
+        self.assertEqual(args.subcommand, "upload")
+        self.assertEqual(args.file_path, "sample.txt")
+        self.assertEqual(args.rf, 3)
+        self.assertEqual(args.chunk_mb, 8)
+        self.assertEqual(args.strategy, "capacity_aware")
+
+        # Test download parser
+        args_dl = parser.parse_args(["download", "sample.txt", "--out", "result.txt"])
+        self.assertEqual(args_dl.subcommand, "download")
+        self.assertEqual(args_dl.filename, "sample.txt")
+        self.assertEqual(args_dl.out, "result.txt")
+
+
 if __name__ == "__main__":
     unittest.main()
