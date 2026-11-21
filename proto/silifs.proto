@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package silifs;
+
+// ===== Strategi penempatan replika (inti judul kita) =====
+enum PlacementStrategy {
+  RANDOM = 0;
+  ROUND_ROBIN = 1;
+  CAPACITY_AWARE = 2;
+}
+
+// ===== Layanan di MASTER =====
+service MasterService {
+  // Data node mendaftar saat pertama hidup
+  rpc RegisterNode(RegisterNodeRequest) returns (RegisterNodeResponse);
+  // Data node lapor "saya hidup" + sisa disk, tiap beberapa detik
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  // Client minta rencana penempatan chunk untuk file baru
+  rpc AllocateChunks(AllocateChunksRequest) returns (AllocateChunksResponse);
+  // Client lapor upload selesai, master catat metadata final
+  rpc CommitFile(CommitFileRequest) returns (CommitFileResponse);
+  // Client minta lokasi chunk untuk download
+  rpc GetChunkLocations(GetChunkLocationsRequest) returns (GetChunkLocationsResponse);
+}
+
+// ===== Layanan di DATA NODE =====
+service DataNodeService {
+  rpc StoreChunk(StoreChunkRequest) returns (StoreChunkResponse);
+  rpc ReadChunk(ReadChunkRequest) returns (ReadChunkResponse);
+  rpc DeleteChunk(DeleteChunkRequest) returns (DeleteChunkResponse);
+  // Master menyuruh node ini menyalin chunk ke node lain (re-replication)
+  rpc ReplicateChunk(ReplicateChunkRequest) returns (ReplicateChunkResponse);
+}
+
+// ----- Pesan: node <-> master -----
+message RegisterNodeRequest {
+  string node_id = 1;
+  string address = 2;          // contoh: "datanode1:50052"
+  uint64 capacity_bytes = 3;
+}
+message RegisterNodeResponse {
+  bool ok = 1;
+}
+
+message HeartbeatRequest {
+  string node_id = 1;
+  uint64 free_bytes = 2;
+  uint32 chunk_count = 3;
+}
+message HeartbeatResponse {
+  bool ok = 1;
+}
+
+// ----- Pesan: client <-> master -----
+message AllocateChunksRequest {
+  string filename = 1;
+  uint64 file_size = 2;
+  uint32 chunk_size = 3;               // dalam byte
+  uint32 replication_factor = 4;
+  PlacementStrategy strategy = 5;
+}
+message ChunkPlacement {
+  string chunk_id = 1;
+  uint32 index = 2;
+  repeated string node_addresses = 3;  // lokasi semua replika
+}
+message AllocateChunksResponse {
+  bool ok = 1;
+  string error = 2;
+  repeated ChunkPlacement chunks = 3;
+}
+
+message CommitFileRequest {
+  string filename = 1;
+}
+message CommitFileResponse {
+  bool ok = 1;
+}
+
+message GetChunkLocationsRequest {
+  string filename = 1;
+}
+message GetChunkLocationsResponse {
+  bool ok = 1;
+  string error = 2;
+  uint64 file_size = 3;
+  repeated ChunkPlacement chunks = 4;
+}
+
+// ----- Pesan: client/master <-> data node -----
+message StoreChunkRequest {
+  string chunk_id = 1;
+  bytes data = 2;
+  string checksum = 3;                 // SHA-256, opsional
+}
+message StoreChunkResponse {
+  bool ok = 1;
+  string error = 2;
+}
+
+message ReadChunkRequest {
+  string chunk_id = 1;
+}
+message ReadChunkResponse {
+  bool ok = 1;
+  bytes data = 2;
+  string error = 3;
+}
+
+message DeleteChunkRequest {
+  string chunk_id = 1;
+}
+message DeleteChunkResponse {
+  bool ok = 1;
+}
+
+message ReplicateChunkRequest {
+  string chunk_id = 1;
+  string target_address = 2;
+}
+message ReplicateChunkResponse {
+  bool ok = 1;
+  string error = 2;
+}
