@@ -1,0 +1,6 @@
+.venv/
+data/
+*.bin
+__pycache__/
+.git/
+experiments/results/
