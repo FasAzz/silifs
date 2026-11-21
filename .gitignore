@@ -6,3 +6,5 @@ data/
 *.bin
 hasil*.bin
 experiments/results/*.csv
+!experiments/data/
+!experiments/data/**
