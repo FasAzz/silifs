@@ -1,0 +1,7 @@
+timestamp,operation,filename,strategy,rf,chunk_mb,file_mb,duration_s,throughput_mbps,chunks,avg_chunk_latency_ms,ok
+2026-11-21 15:44:22,upload,test_50mb.bin,round_robin,2,4.00,50.00,1.0620,47.0818,13,38.16,True
+2026-11-21 15:44:23,download,test_50mb.bin,unknown,0,0.00,50.00,0.6195,80.7148,13,44.89,True
+2026-11-21 15:44:33,download,test_50mb.bin,unknown,0,0.00,50.00,9.6430,5.1851,13,29.97,True
+2026-11-21 23:15:59,upload,tes50.bin,round_robin,2,4.00,50.00,1.0954,45.6471,13,38.96,True
+2026-11-21 23:16:05,download,tes50.bin,unknown,0,0.00,50.00,0.7139,70.0360,13,49.80,True
+2026-11-21 23:19:08,download,tes50.bin,unknown,0,0.00,50.00,0.3797,131.6991,13,26.24,True
