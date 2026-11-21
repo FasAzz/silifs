@@ -5,3 +5,4 @@ data/
 *.log
 *.bin
 hasil*.bin
+experiments/results/*.csv
