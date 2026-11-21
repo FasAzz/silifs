@@ -1,0 +1,91 @@
+services:
+  master:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: silifs:latest
+    container_name: silifs-master
+    command: python -m master.server
+    ports:
+      - "50051:50051"
+    networks:
+      - silifs-net
+
+  datanode1:
+    image: silifs:latest
+    container_name: silifs-datanode1
+    command: >
+      python -m datanode.server --node-id node1 --port 50052
+      --master master:50051 --advertise datanode1:50052
+    volumes:
+      - node1-data:/app/data
+    depends_on:
+      - master
+    networks:
+      - silifs-net
+
+  datanode2:
+    image: silifs:latest
+    container_name: silifs-datanode2
+    command: >
+      python -m datanode.server --node-id node2 --port 50052
+      --master master:50051 --advertise datanode2:50052
+    volumes:
+      - node2-data:/app/data
+    depends_on:
+      - master
+    networks:
+      - silifs-net
+
+  datanode3:
+    image: silifs:latest
+    container_name: silifs-datanode3
+    command: >
+      python -m datanode.server --node-id node3 --port 50052
+      --master master:50051 --advertise datanode3:50052
+    volumes:
+      - node3-data:/app/data
+    depends_on:
+      - master
+    networks:
+      - silifs-net
+
+  datanode4:
+    image: silifs:latest
+    container_name: silifs-datanode4
+    command: >
+      python -m datanode.server --node-id node4 --port 50052
+      --master master:50051 --advertise datanode4:50052
+    volumes:
+      - node4-data:/app/data
+    depends_on:
+      - master
+    networks:
+      - silifs-net
+
+  datanode5:
+    image: silifs:latest
+    container_name: silifs-datanode5
+    command: >
+      python -m datanode.server --node-id node5 --port 50052
+      --master master:50051 --advertise datanode5:50052
+    volumes:
+      - node5-data:/app/data
+    depends_on:
+      - master
+    networks:
+      - silifs-net
+
+volumes:
+  node1-data:
+  node2-data:
+  node3-data:
+  node4-data:
+  node5-data:
+  node6-data:
+  node7-data:
+  node8-data:
+
+networks:
+  silifs-net:
+    driver: bridge
