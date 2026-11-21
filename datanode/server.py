@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import logging
 import os
 import threading
@@ -19,44 +20,80 @@ HEARTBEAT_INTERVAL = 3   # detik
 
 
 class DataNodeService(pb_grpc.DataNodeServiceServicer):
-    def __init__(self, data_dir):
+    def __init__(self, data_dir, capacity_bytes=2048 * 1024 * 1024):
         self.data_dir = data_dir
+        self.capacity_bytes = capacity_bytes
         os.makedirs(data_dir, exist_ok=True)
 
     def _path(self, chunk_id):
         return os.path.join(self.data_dir, chunk_id)
 
     def StoreChunk(self, request, context):
+        # 1. Verifikasi checksum SHA-256 jika disertakan
+        if request.checksum:
+            calculated = hashlib.sha256(request.data).hexdigest()
+            if calculated.lower() != request.checksum.lower():
+                return pb.StoreChunkResponse(
+                    ok=False,
+                    error=f"Checksum mismatch: expected {request.checksum}, got {calculated}"
+                )
+
+        # 2. Pengecekan kapasitas disk
+        target = self._path(request.chunk_id)
+        existing_size = os.path.getsize(target) if os.path.exists(target) else 0
+        free_bytes, _ = disk_stats(self.data_dir, self.capacity_bytes)
+        needed_bytes = len(request.data) - existing_size
+
+        if needed_bytes > free_bytes:
+            return pb.StoreChunkResponse(
+                ok=False,
+                error=f"Disk capacity exceeded: needed {needed_bytes} bytes, free {free_bytes} bytes"
+            )
+
         try:
-            with open(self._path(request.chunk_id), "wb") as f:
+            with open(target, "wb") as f:
                 f.write(request.data)
             return pb.StoreChunkResponse(ok=True)
         except OSError as e:
             return pb.StoreChunkResponse(ok=False, error=str(e))
 
     def ReadChunk(self, request, context):
+        target = self._path(request.chunk_id)
+        if not os.path.exists(target):
+            return pb.ReadChunkResponse(ok=False, error=f"Chunk {request.chunk_id} not found")
         try:
-            with open(self._path(request.chunk_id), "rb") as f:
+            with open(target, "rb") as f:
                 return pb.ReadChunkResponse(ok=True, data=f.read())
         except OSError as e:
             return pb.ReadChunkResponse(ok=False, error=str(e))
 
     def DeleteChunk(self, request, context):
+        target = self._path(request.chunk_id)
+        if not os.path.exists(target):
+            return pb.DeleteChunkResponse(ok=False)
         try:
-            os.remove(self._path(request.chunk_id))
+            os.remove(target)
             return pb.DeleteChunkResponse(ok=True)
         except OSError:
             return pb.DeleteChunkResponse(ok=False)
 
     def ReplicateChunk(self, request, context):
-        """Baca chunk lokal, kirim ke node tujuan."""
+        """Baca chunk lokal, hitung checksum, lalu kirim ke node tujuan."""
+        target = self._path(request.chunk_id)
+        if not os.path.exists(target):
+            return pb.ReplicateChunkResponse(
+                ok=False,
+                error=f"Chunk {request.chunk_id} not found on source node"
+            )
         try:
-            with open(self._path(request.chunk_id), "rb") as f:
+            with open(target, "rb") as f:
                 data = f.read()
+            checksum = hashlib.sha256(data).hexdigest()
             with grpc.insecure_channel(request.target_address, options=CHANNEL_OPTS) as ch:
                 stub = pb_grpc.DataNodeServiceStub(ch)
                 r = stub.StoreChunk(
-                    pb.StoreChunkRequest(chunk_id=request.chunk_id, data=data), timeout=30)
+                    pb.StoreChunkRequest(chunk_id=request.chunk_id, data=data, checksum=checksum),
+                    timeout=30)
             return pb.ReplicateChunkResponse(ok=r.ok, error=r.error)
         except (OSError, grpc.RpcError) as e:
             return pb.ReplicateChunkResponse(ok=False, error=str(e))
@@ -65,9 +102,12 @@ class DataNodeService(pb_grpc.DataNodeServiceServicer):
 def disk_stats(data_dir, capacity):
     used = 0
     count = 0
-    for name in os.listdir(data_dir):
-        used += os.path.getsize(os.path.join(data_dir, name))
-        count += 1
+    if os.path.exists(data_dir):
+        for name in os.listdir(data_dir):
+            file_path = os.path.join(data_dir, name)
+            if os.path.isfile(file_path):
+                used += os.path.getsize(file_path)
+                count += 1
     return max(capacity - used, 0), count
 
 
@@ -107,6 +147,7 @@ def main():
 
     args.data_dir = args.data_dir or os.path.join("data", args.node_id)
     address = args.advertise or f"localhost:{args.port}"
+    capacity_bytes = args.capacity_mb * 1024 * 1024
 
     logging.basicConfig(
         level=logging.INFO,
@@ -115,7 +156,9 @@ def main():
     log = logging.getLogger(args.node_id)
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), options=CHANNEL_OPTS)
-    pb_grpc.add_DataNodeServiceServicer_to_server(DataNodeService(args.data_dir), server)
+    pb_grpc.add_DataNodeServiceServicer_to_server(
+        DataNodeService(args.data_dir, capacity_bytes=capacity_bytes), server
+    )
     server.add_insecure_port(f"0.0.0.0:{args.port}")
     server.start()
     log.info("data node berjalan di port %d, alamat %s", args.port, address)
