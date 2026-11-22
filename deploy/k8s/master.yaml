@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master
+  labels:
+    app: silifs-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: silifs-master
+  template:
+    metadata:
+      labels:
+        app: silifs-master
+    spec:
+      containers:
+        - name: master
+          image: silifs:latest
+          imagePullPolicy: Never
+          command: ["python", "-m", "master.server"]
+          ports:
+            - containerPort: 50051
+              name: grpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: master
+  labels:
+    app: silifs-master
+spec:
+  type: ClusterIP
+  selector:
+    app: silifs-master
+  ports:
+    - port: 50051
+      targetPort: 50051
+      name: grpc

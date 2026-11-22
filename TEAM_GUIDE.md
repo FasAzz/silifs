@@ -19,11 +19,11 @@
 - [x] Uji re-replication end-to-end: 3 node 8/8 chunk (0,295 s), 5 node 3/3 chunk (0,090 s)
 - [x] `deploy/`: Dockerfile, Compose 3/5/8 node, service `client` (Fasha)
 - [x] Hasil eksperimen awal: `experiments/data/` (rr, RF 2, chunk 4 MB, 8 node)
-- [x] `experiments/`: skrip eksperimen otomatis (`run_experiment.ps1`) dan analisis (`analyze.py`) beserta grafik di `docs/figures/` (Fajar, Fasha)
-- [x] Eksperimen skala penuh di Docker: 100 file @ 50 MB, 3 strategi x 3 ukuran cluster (3, 5, 8 node), RF 2, chunk 4 MB, `HEARTBEAT_TIMEOUT = 30 s` (`experiments/data/`, `docs/hasil_eksperimen.md`)
+- [x] `experiments/`: skrip eksperimen otomatis (`run_experiment.ps1` termasuk mode `-Hetero` dan `-Repeat`) dan analisis (`analyze.py`) beserta 6 grafik di `docs/figures/` (Fajar, Fasha)
+- [x] Eksperimen skala penuh di Docker: 9 skenario utama (homogen, 100 file @ 50 MB, `HEARTBEAT_TIMEOUT = 30 s`), 3 skenario kapasitas heterogen (`node1=1 GB`, `node2..5=8 GB`), dan pengulangan 3x untuk `n=3` (`experiments/data/`, `docs/hasil_eksperimen.md`)
 - [ ] Variasi RF (1, 2, 3) dan chunk size (1, 4, 8 MB) dengan beban kecil
 - [ ] Laporan IEEE 6 bab, video demo maksimal 10 menit, README final (Fajar)
-- [ ] Bonus: Kubernetes (kind) dan integrasi dashboard (Fasha dan Azhar)
+- [ ] Bonus: Kubernetes (`kind`) — manifest `deploy/k8s/` sudah disiapkan (belum diuji, menunggu instalasi `kind`) dan integrasi dashboard (Fasha dan Azhar)
 
 ## Setup
 
@@ -80,6 +80,20 @@ docker compose -f deploy/dockerCompose.yml down -v
 - Simulasi node mati: `docker stop silifs-datanode2`, hidupkan lagi dengan `docker start silifs-datanode2`.
 - Hitung chunk per node: `docker exec silifs-datanode1 sh -c "ls /app/data/node1 | wc -l"`.
 - Client berjalan di dalam network Docker (alamat `datanodeN:50052` hanya dikenal di sana). Metrik tersimpan di `experiments/results/client_metrics.csv` di laptop Fasha.
+- Menjalankan eksperimen otomatis dengan skrip PowerShell:
+  ```powershell
+  # 9 skenario utama (homogen: 3, 5, 8 node x 3 strategi)
+  .\experiments\run_experiment.ps1 -Force
+
+  # Skenario kapasitas heterogen (5 node: node1=1024 MB, node2..5=8192 MB)
+  .\experiments\run_experiment.ps1 -Hetero -Force
+
+  # Pengulangan tambahan (_run2 dan _run3) tanpa menimpa data utama
+  .\experiments\run_experiment.ps1 -Nodes 3 -Repeat 2 -StartRun 2 -Force
+
+  # Analisis CSV dan pembuatan grafik
+  .venv\Scripts\python.exe experiments\analyze.py
+  ```
 
 ## Hasil eksperimen
 
