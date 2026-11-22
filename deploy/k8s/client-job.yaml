@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: silifs-smoke-test
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: client
+          image: silifs:latest
+          imagePullPolicy: Never
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              python -c "import os; open('/tmp/test50.bin','wb').write(os.urandom(50*1024*1024))"
+              sha256sum /tmp/test50.bin
+              python -m client.cli --master master:50051 upload /tmp/test50.bin --rf 2 --chunk-mb 4 --strategy round_robin --filename test50.bin
+              python -m client.cli --master master:50051 download test50.bin --out /tmp/hasil50.bin
+              sha256sum /tmp/hasil50.bin
+              cmp /tmp/test50.bin /tmp/hasil50.bin && echo "SHA256 IDENTIK"

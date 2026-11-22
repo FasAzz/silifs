@@ -1,0 +1,207 @@
+2026-11-22T11:21:00.994457261Z 11:21:00.993 [master] master berjalan di port 50051
+2026-11-22T11:21:01.231142175Z 11:21:01.230 [master] node terdaftar: node2 (datanode2:50052)
+2026-11-22T11:21:01.450899815Z 11:21:01.450 [master] node terdaftar: node3 (datanode3:50052)
+2026-11-22T11:21:01.654837741Z 11:21:01.654 [master] node terdaftar: node1 (datanode1:50052)
+2026-11-22T11:21:04.711658110Z 11:21:04.711 [master] alokasi f001.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:06.006220005Z 11:21:06.005 [master] file commit: f001.bin
+2026-11-22T11:21:10.521569530Z 11:21:10.521 [master] alokasi f002.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:11.597828143Z 11:21:11.597 [master] file commit: f002.bin
+2026-11-22T11:21:16.112803082Z 11:21:16.112 [master] alokasi f003.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:17.114776329Z 11:21:17.114 [master] file commit: f003.bin
+2026-11-22T11:21:22.063465200Z 11:21:22.063 [master] alokasi f004.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:23.092453642Z 11:21:23.092 [master] file commit: f004.bin
+2026-11-22T11:21:29.855406241Z 11:21:29.855 [master] alokasi f005.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:30.921802269Z 11:21:30.921 [master] file commit: f005.bin
+2026-11-22T11:21:37.275342711Z 11:21:37.275 [master] alokasi f006.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:38.278328363Z 11:21:38.277 [master] file commit: f006.bin
+2026-11-22T11:21:43.980267375Z 11:21:43.979 [master] alokasi f007.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:44.971546088Z 11:21:44.971 [master] file commit: f007.bin
+2026-11-22T11:21:46.201734945Z 11:21:46.201 [master] alokasi f008.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:47.201360636Z 11:21:47.201 [master] file commit: f008.bin
+2026-11-22T11:21:48.430022743Z 11:21:48.429 [master] alokasi f009.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:49.403660529Z 11:21:49.403 [master] file commit: f009.bin
+2026-11-22T11:21:50.569091624Z 11:21:50.568 [master] alokasi f010.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:51.652535684Z 11:21:51.652 [master] file commit: f010.bin
+2026-11-22T11:21:52.694375956Z 11:21:52.694 [master] alokasi f011.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:53.777414938Z 11:21:53.777 [master] file commit: f011.bin
+2026-11-22T11:21:54.807139839Z 11:21:54.806 [master] alokasi f012.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:55.903579196Z 11:21:55.903 [master] file commit: f012.bin
+2026-11-22T11:21:57.082501786Z 11:21:57.082 [master] alokasi f013.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:21:58.116753122Z 11:21:58.116 [master] file commit: f013.bin
+2026-11-22T11:21:59.322701636Z 11:21:59.322 [master] alokasi f014.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:00.316096611Z 11:22:00.315 [master] file commit: f014.bin
+2026-11-22T11:22:01.614549240Z 11:22:01.614 [master] alokasi f015.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:02.883320908Z 11:22:02.882 [master] file commit: f015.bin
+2026-11-22T11:22:03.999701356Z 11:22:03.999 [master] alokasi f016.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:05.080150654Z 11:22:05.079 [master] file commit: f016.bin
+2026-11-22T11:22:06.156775734Z 11:22:06.156 [master] alokasi f017.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:07.315371055Z 11:22:07.315 [master] file commit: f017.bin
+2026-11-22T11:22:08.374622709Z 11:22:08.374 [master] alokasi f018.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:09.432484790Z 11:22:09.432 [master] file commit: f018.bin
+2026-11-22T11:22:10.554097780Z 11:22:10.553 [master] alokasi f019.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:11.556295674Z 11:22:11.556 [master] file commit: f019.bin
+2026-11-22T11:22:12.864687194Z 11:22:12.864 [master] alokasi f020.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:13.845231799Z 11:22:13.844 [master] file commit: f020.bin
+2026-11-22T11:22:15.047849990Z 11:22:15.047 [master] alokasi f021.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:16.061958929Z 11:22:16.061 [master] file commit: f021.bin
+2026-11-22T11:22:17.159874828Z 11:22:17.159 [master] alokasi f022.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:18.288957199Z 11:22:18.288 [master] file commit: f022.bin
+2026-11-22T11:22:19.369616764Z 11:22:19.369 [master] alokasi f023.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:20.459361499Z 11:22:20.458 [master] file commit: f023.bin
+2026-11-22T11:22:21.582007568Z 11:22:21.581 [master] alokasi f024.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:22.724913417Z 11:22:22.724 [master] file commit: f024.bin
+2026-11-22T11:22:23.900745234Z 11:22:23.900 [master] alokasi f025.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:24.928040875Z 11:22:24.927 [master] file commit: f025.bin
+2026-11-22T11:22:26.100570548Z 11:22:26.100 [master] alokasi f026.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:27.106500491Z 11:22:27.106 [master] file commit: f026.bin
+2026-11-22T11:22:28.383793486Z 11:22:28.383 [master] alokasi f027.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:29.422185785Z 11:22:29.421 [master] file commit: f027.bin
+2026-11-22T11:22:30.552264915Z 11:22:30.552 [master] alokasi f028.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:31.632333892Z 11:22:31.632 [master] file commit: f028.bin
+2026-11-22T11:22:32.688650309Z 11:22:32.688 [master] alokasi f029.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:33.916267169Z 11:22:33.915 [master] file commit: f029.bin
+2026-11-22T11:22:34.994278594Z 11:22:34.994 [master] alokasi f030.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:36.091782490Z 11:22:36.091 [master] file commit: f030.bin
+2026-11-22T11:22:37.310071928Z 11:22:37.309 [master] alokasi f031.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:38.388597155Z 11:22:38.388 [master] file commit: f031.bin
+2026-11-22T11:22:39.628447187Z 11:22:39.628 [master] alokasi f032.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:40.636995290Z 11:22:40.636 [master] file commit: f032.bin
+2026-11-22T11:22:41.778219657Z 11:22:41.777 [master] alokasi f033.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:42.837002649Z 11:22:42.836 [master] file commit: f033.bin
+2026-11-22T11:22:44.017636668Z 11:22:44.017 [master] alokasi f034.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:45.141002332Z 11:22:45.140 [master] file commit: f034.bin
+2026-11-22T11:22:46.224341627Z 11:22:46.224 [master] alokasi f035.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:47.351700094Z 11:22:47.351 [master] file commit: f035.bin
+2026-11-22T11:22:48.516054074Z 11:22:48.515 [master] alokasi f036.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:49.672049711Z 11:22:49.671 [master] file commit: f036.bin
+2026-11-22T11:22:50.840892554Z 11:22:50.840 [master] alokasi f037.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:51.874475444Z 11:22:51.874 [master] file commit: f037.bin
+2026-11-22T11:22:53.027754698Z 11:22:53.027 [master] alokasi f038.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:54.160361074Z 11:22:54.160 [master] file commit: f038.bin
+2026-11-22T11:22:55.297437282Z 11:22:55.297 [master] alokasi f039.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:56.440130076Z 11:22:56.439 [master] file commit: f039.bin
+2026-11-22T11:22:57.588299009Z 11:22:57.588 [master] alokasi f040.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:22:58.730162687Z 11:22:58.729 [master] file commit: f040.bin
+2026-11-22T11:22:59.949918661Z 11:22:59.949 [master] alokasi f041.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:01.087729557Z 11:23:01.087 [master] file commit: f041.bin
+2026-11-22T11:23:02.453146787Z 11:23:02.452 [master] alokasi f042.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:03.481680656Z 11:23:03.481 [master] file commit: f042.bin
+2026-11-22T11:23:04.680743693Z 11:23:04.680 [master] alokasi f043.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:05.806480294Z 11:23:05.806 [master] file commit: f043.bin
+2026-11-22T11:23:06.856812587Z 11:23:06.856 [master] alokasi f044.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:08.008306568Z 11:23:08.008 [master] file commit: f044.bin
+2026-11-22T11:23:09.114344857Z 11:23:09.114 [master] alokasi f045.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:10.430180002Z 11:23:10.429 [master] file commit: f045.bin
+2026-11-22T11:23:11.804124649Z 11:23:11.803 [master] alokasi f046.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:12.883870458Z 11:23:12.883 [master] file commit: f046.bin
+2026-11-22T11:23:14.055678913Z 11:23:14.055 [master] alokasi f047.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:15.247937697Z 11:23:15.247 [master] file commit: f047.bin
+2026-11-22T11:23:16.316272500Z 11:23:16.316 [master] alokasi f048.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:17.505072843Z 11:23:17.504 [master] file commit: f048.bin
+2026-11-22T11:23:18.585754482Z 11:23:18.585 [master] alokasi f049.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:19.773762068Z 11:23:19.773 [master] file commit: f049.bin
+2026-11-22T11:23:20.941089476Z 11:23:20.940 [master] alokasi f050.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:22.016120631Z 11:23:22.015 [master] file commit: f050.bin
+2026-11-22T11:23:23.309913329Z 11:23:23.309 [master] alokasi f051.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:24.359184463Z 11:23:24.358 [master] file commit: f051.bin
+2026-11-22T11:23:25.638360324Z 11:23:25.638 [master] alokasi f052.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:26.940989792Z 11:23:26.940 [master] file commit: f052.bin
+2026-11-22T11:23:28.311610935Z 11:23:28.311 [master] alokasi f053.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:29.620159369Z 11:23:29.619 [master] file commit: f053.bin
+2026-11-22T11:23:31.076599253Z 11:23:31.076 [master] alokasi f054.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:32.276603958Z 11:23:32.276 [master] file commit: f054.bin
+2026-11-22T11:23:33.439669731Z 11:23:33.439 [master] alokasi f055.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:34.668979376Z 11:23:34.668 [master] file commit: f055.bin
+2026-11-22T11:23:35.814908488Z 11:23:35.814 [master] alokasi f056.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:36.951429891Z 11:23:36.951 [master] file commit: f056.bin
+2026-11-22T11:23:38.181384215Z 11:23:38.181 [master] alokasi f057.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:39.356005869Z 11:23:39.355 [master] file commit: f057.bin
+2026-11-22T11:23:40.700292788Z 11:23:40.700 [master] alokasi f058.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:41.840272635Z 11:23:41.839 [master] file commit: f058.bin
+2026-11-22T11:23:42.926115526Z 11:23:42.925 [master] alokasi f059.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:44.110661382Z 11:23:44.110 [master] file commit: f059.bin
+2026-11-22T11:23:45.223924864Z 11:23:45.223 [master] alokasi f060.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:46.435731722Z 11:23:46.435 [master] file commit: f060.bin
+2026-11-22T11:23:47.638968930Z 11:23:47.638 [master] alokasi f061.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:48.724761362Z 11:23:48.724 [master] file commit: f061.bin
+2026-11-22T11:23:49.969234760Z 11:23:49.969 [master] alokasi f062.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:51.086984089Z 11:23:51.086 [master] file commit: f062.bin
+2026-11-22T11:23:52.238849546Z 11:23:52.238 [master] alokasi f063.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:53.377666885Z 11:23:53.377 [master] file commit: f063.bin
+2026-11-22T11:23:54.459442410Z 11:23:54.459 [master] alokasi f064.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:55.638896163Z 11:23:55.638 [master] file commit: f064.bin
+2026-11-22T11:23:56.875493247Z 11:23:56.875 [master] alokasi f065.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:23:57.978498346Z 11:23:57.978 [master] file commit: f065.bin
+2026-11-22T11:23:59.152916008Z 11:23:59.152 [master] alokasi f066.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:00.256382714Z 11:24:00.256 [master] file commit: f066.bin
+2026-11-22T11:24:01.605405832Z 11:24:01.605 [master] alokasi f067.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:02.752921712Z 11:24:02.752 [master] file commit: f067.bin
+2026-11-22T11:24:03.898098611Z 11:24:03.897 [master] alokasi f068.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:05.128444012Z 11:24:05.128 [master] file commit: f068.bin
+2026-11-22T11:24:06.219298873Z 11:24:06.219 [master] alokasi f069.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:07.417898332Z 11:24:07.417 [master] file commit: f069.bin
+2026-11-22T11:24:08.583699163Z 11:24:08.583 [master] alokasi f070.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:09.683809031Z 11:24:09.683 [master] file commit: f070.bin
+2026-11-22T11:24:10.907847353Z 11:24:10.907 [master] alokasi f071.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:12.075488778Z 11:24:12.075 [master] file commit: f071.bin
+2026-11-22T11:24:13.220617454Z 11:24:13.220 [master] alokasi f072.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:14.413377413Z 11:24:14.413 [master] file commit: f072.bin
+2026-11-22T11:24:15.503029570Z 11:24:15.502 [master] alokasi f073.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:16.737890403Z 11:24:16.737 [master] file commit: f073.bin
+2026-11-22T11:24:17.932029519Z 11:24:17.931 [master] alokasi f074.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:19.009138218Z 11:24:19.008 [master] file commit: f074.bin
+2026-11-22T11:24:20.234768677Z 11:24:20.234 [master] alokasi f075.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:21.331823977Z 11:24:21.331 [master] file commit: f075.bin
+2026-11-22T11:24:22.569602355Z 11:24:22.569 [master] alokasi f076.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:23.734001890Z 11:24:23.733 [master] file commit: f076.bin
+2026-11-22T11:24:24.765120230Z 11:24:24.764 [master] alokasi f077.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:25.992761966Z 11:24:25.992 [master] file commit: f077.bin
+2026-11-22T11:24:27.098436478Z 11:24:27.098 [master] alokasi f078.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:28.319353516Z 11:24:28.319 [master] file commit: f078.bin
+2026-11-22T11:24:29.566232958Z 11:24:29.565 [master] alokasi f079.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:30.671644282Z 11:24:30.671 [master] file commit: f079.bin
+2026-11-22T11:24:31.864528008Z 11:24:31.864 [master] alokasi f080.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:33.081767673Z 11:24:33.081 [master] file commit: f080.bin
+2026-11-22T11:24:34.204398204Z 11:24:34.204 [master] alokasi f081.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:35.438198301Z 11:24:35.437 [master] file commit: f081.bin
+2026-11-22T11:24:36.518223129Z 11:24:36.517 [master] alokasi f082.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:37.709772342Z 11:24:37.709 [master] file commit: f082.bin
+2026-11-22T11:24:38.972270293Z 11:24:38.971 [master] alokasi f083.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:40.100613621Z 11:24:40.100 [master] file commit: f083.bin
+2026-11-22T11:24:41.309619591Z 11:24:41.309 [master] alokasi f084.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:42.420180590Z 11:24:42.419 [master] file commit: f084.bin
+2026-11-22T11:24:43.597818348Z 11:24:43.597 [master] alokasi f085.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:44.795609626Z 11:24:44.795 [master] file commit: f085.bin
+2026-11-22T11:24:45.901778348Z 11:24:45.901 [master] alokasi f086.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:47.104710809Z 11:24:47.104 [master] file commit: f086.bin
+2026-11-22T11:24:48.371975557Z 11:24:48.371 [master] alokasi f087.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:49.488413023Z 11:24:49.488 [master] file commit: f087.bin
+2026-11-22T11:24:50.694914537Z 11:24:50.694 [master] alokasi f088.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:51.832870789Z 11:24:51.832 [master] file commit: f088.bin
+2026-11-22T11:24:53.014086291Z 11:24:53.013 [master] alokasi f089.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:54.269410129Z 11:24:54.269 [master] file commit: f089.bin
+2026-11-22T11:24:55.350225415Z 11:24:55.349 [master] alokasi f090.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:56.566677830Z 11:24:56.566 [master] file commit: f090.bin
+2026-11-22T11:24:57.660368606Z 11:24:57.660 [master] alokasi f091.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:24:58.861458520Z 11:24:58.861 [master] file commit: f091.bin
+2026-11-22T11:25:00.058922789Z 11:25:00.058 [master] alokasi f092.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:01.201695230Z 11:25:01.201 [master] file commit: f092.bin
+2026-11-22T11:25:02.546059863Z 11:25:02.545 [master] alokasi f093.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:03.907232885Z 11:25:03.906 [master] file commit: f093.bin
+2026-11-22T11:25:05.049859628Z 11:25:05.049 [master] alokasi f094.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:06.260223270Z 11:25:06.259 [master] file commit: f094.bin
+2026-11-22T11:25:07.434733903Z 11:25:07.434 [master] alokasi f095.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:08.539132271Z 11:25:08.538 [master] file commit: f095.bin
+2026-11-22T11:25:09.794504975Z 11:25:09.794 [master] alokasi f096.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:10.927141073Z 11:25:10.926 [master] file commit: f096.bin
+2026-11-22T11:25:12.037425358Z 11:25:12.037 [master] alokasi f097.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:13.247411370Z 11:25:13.247 [master] file commit: f097.bin
+2026-11-22T11:25:14.392380189Z 11:25:14.392 [master] alokasi f098.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:15.638957056Z 11:25:15.638 [master] file commit: f098.bin
+2026-11-22T11:25:16.751006833Z 11:25:16.750 [master] alokasi f099.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:17.905324411Z 11:25:17.905 [master] file commit: f099.bin
+2026-11-22T11:25:19.049757327Z 11:25:19.049 [master] alokasi f100.bin: 13 chunk, RF=2, strategi=capacity_aware
+2026-11-22T11:25:20.307391267Z 11:25:20.307 [master] file commit: f100.bin
+2026-11-22T11:25:50.992685525Z 11:25:50.992 [master] NODE MATI terdeteksi: node2
+2026-11-22T11:25:50.994816488Z 11:25:50.994 [master] re-replication: 866 chunk perlu dipulihkan (node mati: node2)
+2026-11-22T11:26:30.598925657Z 11:26:30.598 [master] PEMULIHAN SELESAI: 866/866 chunk, waktu pemulihan = 39.606 detik

@@ -1,0 +1,10 @@
+skenario,strategi,rf,chunk_mb,nodes,hetero,files_total,upload_ok,upload_gagal,total_s
+rnd_rf2_c4_n5_het,random,2,4,5,1,100,52,48,237.65
+rr_rf2_c4_n5_het,round_robin,2,4,5,1,100,51,49,270.35
+cap_rf2_c4_n5_het,capacity_aware,2,4,5,1,100,100,0,327.84
+rnd_rf2_c4_n3_run2,random,2,4,3,0,100,100,0,316.90
+rnd_rf2_c4_n3_run3,random,2,4,3,0,100,100,0,303.52
+rr_rf2_c4_n3_run2,round_robin,2,4,3,0,100,100,0,325.55
+rr_rf2_c4_n3_run3,round_robin,2,4,3,0,100,100,0,299.03
+cap_rf2_c4_n3_run2,capacity_aware,2,4,3,0,100,100,0,309.44
+cap_rf2_c4_n3_run3,capacity_aware,2,4,3,0,100,100,0,257.05

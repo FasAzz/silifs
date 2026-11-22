@@ -1,25 +1,27 @@
 # Hasil Eksperimen SiliFS: Perbandingan Strategi Penempatan Replika
 
-Dokumen ini menyajikan hasil eksperimen perbandingan tiga strategi penempatan replika (**Random**, **Round-Robin**, dan **Capacity-Aware**) terhadap keseimbangan beban (*load balance*), kinerja upload, dan waktu pemulihan (*recovery time*) pada sistem berkas terdistribusi SiliFS.
+Dokumen ini menyajikan hasil eksperimen perbandingan tiga strategi penempatan replika (**Random**, **Round-Robin**, dan **Capacity-Aware**) terhadap keseimbangan beban (*load balance*), kinerja upload, ketahanan kapasitas heterogen, dan waktu pemulihan (*recovery time*) pada sistem berkas terdistribusi SiliFS.
 
 ---
 
-## 1. Metodologi dan Konfigurasi Eksperimen
+## 1. Metodologi dan Lingkungan Eksperimen
 
-- **Konfigurasi beban utama**: 100 file biner acak berukuran 50 MB per file (total 5.000 MB data logis), *replication factor* `RF = 2`, ukuran chunk `4 MB` (13 chunk per file → 1.300 chunk unik atau **2.600 replika** per skenario).
-- **Variabel uji**:
-  - Strategi penempatan: `random` (`rnd`), `round_robin` (`rr`), dan `capacity_aware` (`cap`).
-  - Ukuran klaster: `3`, `5`, dan `8` data node (total 9 skenario).
-  - Kapasitas virtual tiap data node: `8192 MB` (`--capacity-mb 8192`).
-- **Lingkungan eksekusi**: Seluruh container (`master`, `datanode1..N`, `client`) dijalankan pada satu host Windows menggunakan Docker Desktop (Docker versi `29.9.2`) melalui Docker Compose (`deploy/dockerCompose.yml`, `dockerCompose.5.yml`, `dockerCompose.8.yml`). Sebelum setiap skenario, klaster dibersihkan total dengan `docker compose ... down -v`.
-- **Simulasi kegagalan dan pengukuran**: Setelah 100 file selesai diunggah dan jumlah chunk per node dicatat, `node2` (`silifs-datanode2`) dihentikan paksa dengan `docker kill`. Waktu deteksi dihitung dari timestamp host saat `docker kill` selesai hingga log `NODE MATI terdeteksi: node2` di master; waktu pemulihan diambil dari log `PEMULIHAN SELESAI` yang dicatat master sejak deteksi hingga seluruh chunk milik `node2` selesai direplikasi ulang secara sekuensial.
-- **Penyesuaian `HEARTBEAT_TIMEOUT` (10 s → 30 s)**: Pada percobaan awal dengan `HEARTBEAT_TIMEOUT = 10` detik, beban I/O disk yang tinggi saat re-replication pada satu host menyebabkan heartbeat beberapa node yang masih hidup terlambat melampaui 10 detik. Hal ini memicu *false-positive* deteksi node mati pada node lain (`node1`, `node3`, `node6`, `node7`) sehingga terjadi re-replication ganda atau baris pemulihan `0/0 chunk` yang mengacaukan pengukuran. Untuk menjaga validitas pengukuran pada lingkungan host tunggal, `HEARTBEAT_TIMEOUT` di `master/server.py` dinaikkan dari `10` menjadi `30` detik (tanpa mengubah logika re-replication sekuensial), image Docker dibangun ulang, dan seluruh 9 skenario dijalankan ulang dari awal. Dengan `HEARTBEAT_TIMEOUT = 30` detik, tidak ada satu pun *false-positive* node mati pada ke-9 skenario.
+- **Lingkungan host**:
+  - Spesifikasi fisik laptop: `[ISI MANUAL: CPU/RAM]` (versi Windows: `[ISI MANUAL: Versi Windows]`).
+  - Engine Docker: Docker Desktop versi `29.9.2` (alokasi engine tercatat via `docker info`: `12` vCPU, `7,44 GiB` RAM).
+- **Konfigurasi beban utama (homogen)**: 100 file biner acak berukuran 50 MB per file (total 5.000 MB data logis), *replication factor* `RF = 2`, ukuran chunk `4 MB` (13 chunk per file → 1.300 chunk unik atau **2.600 replika** per skenario).
+  - Strategi: `random` (`rnd`), `round_robin` (`rr`), `capacity_aware` (`cap`).
+  - Ukuran klaster: `3`, `5`, dan `8` data node (`deploy/dockerCompose.yml`, `dockerCompose.5.yml`, `dockerCompose.8.yml`), masing-masing `--capacity-mb 8192`.
+- **Konfigurasi kapasitas heterogen**: 5 data node (`deploy/dockerCompose.hetero.yml`), dengan `node1` berkapasitas `--capacity-mb 1024` dan `node2..node5` berkapasitas `--capacity-mb 8192`, beban 100 file @ 50 MB, `RF = 2`, chunk `4 MB`. Node yang dimatikan adalah `node2` (kapasitas 8192 MB, bukan `node1` yang kecil) agar pengujian pemulihan adil bagi ketiga strategi.
+- **Konfigurasi pengulangan**: 2 run tambahan (`_run2` dan `_run3`, total **3 pengulangan**) untuk konfigurasi `3 node` pada seluruh 3 strategi guna mengevaluasi variasi waktu pemulihan. Konfigurasi `5 node` dan `8 node` masih berjumlah 1 pengulangan (`n=1`).
+- **Simulasi kegagalan & kebersihan klaster**: Sebelum tiap skenario/run, klaster dibersihkan total dengan `docker compose ... down -v`. Setelah upload selesai dan jumlah chunk per node dicatat, `node2` dihentikan paksa dengan `docker kill`. Waktu deteksi dihitung dari timestamp host saat `docker kill` selesai hingga log `NODE MATI terdeteksi: node2` di master; waktu pemulihan diambil dari log `PEMULIHAN SELESAI` di master.
+- **Penyesuaian `HEARTBEAT_TIMEOUT` (10 s → 30 s)**: Pada percobaan awal dengan `HEARTBEAT_TIMEOUT = 10` detik, beban I/O disk tinggi saat re-replication di satu host menyebabkan heartbeat beberapa node yang masih hidup terlambat >10 detik sehingga memicu *false-positive* deteksi node mati (`node1`, `node3`, `node6`, `node7`) dan menghasilkan baris pemulihan `0/0 chunk` atau re-replication ganda. `HEARTBEAT_TIMEOUT` di `master/server.py` dinaikkan menjadi `30` detik (tanpa mengubah logika re-replication sekuensial), image Docker dibangun ulang, dan seluruh rangkaian eksperimen dijalankan dari awal. Dengan timeout `30` detik, **tidak terjadi satu pun *false-positive* node mati** pada seluruh 18 eksekusi (9 utama + 3 heterogen + 6 pengulangan `n=3`).
 
 ---
 
-## 2. Tabel Ringkasan Hasil
+## 2. Hasil Eksperimen Utama (Klaster Homogen, 9 Skenario)
 
-Seluruh 9 skenario menghasilkan 100/100 upload berhasil (`ok=True`), total tepat 2.600 replika per skenario, dan 100% chunk milik `node2` berhasil dipulihkan tanpa kegagalan replikasi. Standar deviasi (`Std Chunk`) dihitung sebagai standar deviasi populasi (`ddof=0`) atas seluruh $N$ data node pada klaster, dan koefisien variasi `CV = Std / Mean`.
+Seluruh 9 skenario utama menghasilkan 100/100 upload berhasil (`ok=True`), tepat 2.600 replika per skenario, dan 100% chunk milik `node2` berhasil dipulihkan tanpa error. Standar deviasi beban (`Std Chunk`) dihitung sebagai standar deviasi populasi (`ddof=0`) atas seluruh $N$ data node, dan koefisien variasi `CV = Std / Mean`.
 
 | Skenario | Strategi | Node | Throughput Upload (MB/s) | Latensi Chunk (ms) | Mean Chunk/Node | Std Chunk | CV | Max–Min Chunk | Waktu Deteksi (s) | Waktu Pemulihan (s) | Chunk Dipulihkan |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -33,71 +35,122 @@ Seluruh 9 skenario menghasilkan 100/100 upload berhasil (`ok=True`), total tepat
 | `rr_rf2_c4_n8` | Round-Robin | 8 | 46,80 | 29,18 | 325,00 | 0,87 | 0,0027 | 2 | 27,342 | 13,050 | 325/325 |
 | `cap_rf2_c4_n8` | Capacity-Aware | 8 | 46,52 | 29,26 | 325,00 | 1,22 | 0,0038 | 3 | 28,108 | 15,438 | 323/323 |
 
-Sumber data mentah: [summary.csv](../experiments/data/summary.csv), [load_balance.csv](../experiments/data/load_balance.csv), dan [recovery.csv](../experiments/data/recovery.csv).
+Sumber data: [summary.csv](../experiments/data/summary.csv), [load_balance.csv](../experiments/data/load_balance.csv), dan [recovery.csv](../experiments/data/recovery.csv).
 
----
-
-## 3. Analisis dan Interpretasi Grafik
-
-### 3.1 Throughput Upload per Strategi
+### 2.1 Throughput Upload per Strategi
 
 ![Perbandingan Throughput Upload](figures/01_throughput_upload.png)
 
-- **Fakta dari data**: Rata-rata throughput upload berada pada rentang sempit **42,32–46,80 MB/s** di seluruh 9 skenario (rata-rata latensi per chunk `29,18–32,61 ms`). **Round-Robin** mencatat throughput tertinggi di setiap ukuran klaster (`45,19 MB/s` pada 3 node, `46,47 MB/s` pada 5 node, dan `46,80 MB/s` pada 8 node). Pada 8 node, **Capacity-Aware** (`46,52 MB/s`) hampir menyamai Round-Robin, sedangkan **Random** (`42,32 MB/s`) menjadi yang terendah.
-- **Dugaan penyebab**: Selisih antar strategi relatif kecil (~1–4,5 MB/s) karena seluruh data node berjalan di satu host fisik dengan disk dan CPU yang sama, serta alur upload dari sisi client mengirim file satu per satu secara sekuensial. Kemungkinan penurunan ringan pada `rnd_rf2_c4_n8` disebabkan fluktuasi beban latar belakang host atau ketidakseimbangan sementara penulisan ke node tertentu saat pengacakan.
+- **Fakta dari data**: Pada run utama, rata-rata throughput upload berada di rentang sempit `42,32–46,80 MB/s` (rata-rata latensi per chunk `29,18–32,61 ms`). Round-Robin mencatat angka tertinggi pada run utama di ketiga ukuran klaster (`45,19`, `46,47`, `46,80 MB/s`). Namun, pada pengulangan `n=3` (Bagian 3), throughput antar run berfluktuasi dengan simpangan baku `3,86–6,07 MB/s`.
+- **Dugaan penyebab**: Selisih antar strategi relatif kecil karena seluruh container berbagi satu disk fisik dan CPU yang sama serta client mengunggah file secara sekuensial; fluktuasi antar run diduga berasal dari aktivitas latar belakang sistem operasi host.
 
-### 3.2 Keseimbangan Beban (Standar Deviasi Jumlah Chunk)
+### 2.2 Keseimbangan Beban (Standar Deviasi Jumlah Chunk)
 
 ![Perbandingan Standar Deviasi Beban](figures/02_standar_deviasi_beban.png)
 
 - **Fakta dari data**:
-  - **Round-Robin** paling merata di semua ukuran klaster: `std = 0,47` (`max-min = 1`) pada 3 node, `std = 0,00` (`max-min = 0`, tepat 520 chunk per node) pada 5 node, dan `std = 0,87` (`max-min = 2`) pada 8 node.
-  - **Capacity-Aware** berada di posisi kedua dengan sebaran sangat dekat dengan Round-Robin: `std = 1,25` (`max-min = 3`) pada 3 node, `std = 3,79` (`max-min = 11`) pada 5 node, dan `std = 1,22` (`max-min = 3`) pada 8 node.
-  - **Random** memiliki ketimpangan terbesar pada semua ukuran klaster, dengan standar deviasi meningkat dari `8,01` (3 node, `CV = 0,92%`, `max-min = 17`) menjadi `11,23` (5 node, `CV = 2,16%`, `max-min = 34`) dan `11,95` (8 node, `CV = 3,68%`, `max-min = 33`).
-- **Dugaan penyebab**: Round-Robin menggeser pointer pemilihan node secara deterministik per chunk sehingga setiap node menerima jumlah chunk hampir identik (tepat sama bila 2.600 habis dibagi jumlah node, seperti pada 5 node). Capacity-Aware memilih node berdasarkan `free_bytes` terbesar yang diperbarui melalui heartbeat berkala; jeda pembaruan heartbeat antar upload diduga menyebabkan sedikit ketidakseimbangan (`max-min` 3–11 chunk) dibanding Round-Robin. Sementara itu, Random memilih secara seragam tanpa memori alokasi sebelumnya sehingga variasi alami distribusi binomial/multinomial tetap muncul dan koefisien variasinya makin terlihat saat jumlah node bertambah.
+  - **Round-Robin** paling merata di semua ukuran klaster: `std = 0,47` (`max-min = 1`) pada 3 node, `std = 0,00` (`max-min = 0`, tepat 520 chunk/node) pada 5 node, dan `std = 0,87` (`max-min = 2`) pada 8 node.
+  - **Capacity-Aware** berada di posisi kedua: `std = 1,25` (`max-min = 3`) pada 3 node, `std = 3,79` (`max-min = 11`) pada 5 node, dan `std = 1,22` (`max-min = 3`) pada 8 node.
+  - **Random** paling tidak merata: `std = 8,01` (`CV = 0,92%`, `max-min = 17`) pada 3 node, `11,23` (`CV = 2,16%`, `max-min = 34`) pada 5 node, dan `11,95` (`CV = 3,68%`, `max-min = 33`) pada 8 node.
+- **Dugaan penyebab**: Round-Robin menggeser pointer pemilihan node secara deterministik per chunk. Capacity-Aware memilih berdasarkan `free_bytes` terbesar yang disinkronkan lewat heartbeat berkala (tiap 3 detik), sehingga jeda pembaruan heartbeat diduga menimbulkan selisih kecil (`max-min` 3–11 chunk). Random memilih seragam tanpa memori alokasi sebelumnya sehingga variasi statistik tetap muncul.
 
-### 3.3 Waktu Pemulihan saat 1 Node Mati
+### 2.3 Skalabilitas (Throughput Upload terhadap Jumlah Node)
+
+![Skalabilitas Throughput Upload](figures/04_scalability_throughput.png)
+
+- **Fakta dari data**: Penambahan jumlah node dari 3 ke 5 dan 8 node tidak menaikkan throughput upload secara linear: Round-Robin `45,19 → 46,47 → 46,80 MB/s` (`+3,6%`), Capacity-Aware `43,43 → 44,42 → 46,52 MB/s` (`+7,1%`), dan Random `43,72 → 45,18 → 42,32 MB/s`.
+- **Dugaan penyebab**: Seluruh data node berbagi satu disk fisik dan CPU di host tunggal, sementara skrip pengujian hanya menjalankan satu client secara berurutan (tanpa konkurensi multi-client). Sebaliknya, manfaat penambahan node terlihat jelas pada penurunan jumlah chunk per node dan waktu pemulihan.
+
+---
+
+## 3. Pengulangan Waktu Pemulihan (`n=3`, 3 Pengulangan)
+
+Untuk menguji kestabilan waktu pemulihan, dilakukan 3 pengulangan penuh (`run1`, `_run2`, `_run3`) pada klaster 3 node (total 9 run). Simpangan baku antar run dihitung sebagai simpangan baku sampel (`ddof=1`). Sumber data: [summary_ulang.csv](../experiments/data/summary_ulang.csv).
+
+| Konfigurasi | Jumlah Run (`n`) | Pemulihan per Run (s) | Waktu Pemulihan (Mean ± SD) | Waktu Deteksi (Mean ± SD) | Throughput Upload (Mean ± SD) | Rata-rata Chunk Dipulihkan |
+|---|---:|---|---:|---:|---:|---:|
+| `rnd_rf2_c4_n3` | 3 | `40,44` / `47,54` / `57,36` | **48,44 ± 8,49 s** | 29,22 ± 0,77 s | 39,27 ± 3,86 MB/s | 850,3 |
+| `rr_rf2_c4_n3` | 3 | `41,16` / `102,46` / `86,20` | **76,61 ± 31,75 s** | 29,18 ± 0,54 s | 38,19 ± 6,07 MB/s | 866,7 |
+| `cap_rf2_c4_n3` | 3 | `52,58` / `52,46` / `39,61` | **48,22 ± 7,46 s** | 29,46 ± 1,42 s | 40,72 ± 5,04 MB/s | 866,0 |
+| `rnd_rf2_c4_n5` | 1 | `21,23` | 21,23 s *(n=1)* | 29,87 s | 45,18 MB/s | 517,0 |
+| `rr_rf2_c4_n5` | 1 | `23,27` | 23,27 s *(n=1)* | 27,85 s | 46,47 MB/s | 520,0 |
+| `cap_rf2_c4_n5` | 1 | `22,49` | 22,49 s *(n=1)* | 31,40 s | 44,42 MB/s | 521,0 |
+| `rnd_rf2_c4_n8` | 1 | `13,95` | 13,95 s *(n=1)* | 28,87 s | 42,32 MB/s | 311,0 |
+| `rr_rf2_c4_n8` | 1 | `13,05` | 13,05 s *(n=1)* | 27,34 s | 46,80 MB/s | 325,0 |
+| `cap_rf2_c4_n8` | 1 | `15,44` | 15,44 s *(n=1)* | 28,11 s | 46,52 MB/s | 323,0 |
 
 ![Perbandingan Waktu Pemulihan](figures/03_waktu_pemulihan.png)
 
 - **Fakta dari data**:
-  - Waktu deteksi kegagalan `node2` konsisten di kisaran **27,34–31,40 detik** di seluruh skenario (sejalan dengan `HEARTBEAT_TIMEOUT = 30` detik).
-  - Waktu pemulihan menurun drastis seiring bertambahnya jumlah node:
-    - **3 node** (861–867 chunk): Random `40,441 s`, Round-Robin `41,163 s`, Capacity-Aware `52,578 s`.
-    - **5 node** (517–521 chunk): Random `21,230 s`, Capacity-Aware `22,485 s`, Round-Robin `23,273 s`.
-    - **8 node** (311–325 chunk): Round-Robin `13,050 s`, Random `13,950 s`, Capacity-Aware `15,438 s`.
-  - Tidak ada satu strategi yang selalu tercepat di semua ukuran klaster; pada 5 dan 8 node, selisih antar strategi hanya sekitar `2,0–2,4` detik.
-- **Dugaan penyebab**: Karena `rereplicate` di `master/server.py` memulihkan chunk satu per satu secara sekuensial, faktor dominan waktu pemulihan adalah **jumlah chunk yang harus disalin ulang** ($\approx 2600 / N$), bukan algoritma penempatannya. Lonjakan waktu pemulihan `cap_rf2_c4_n3` (`52,578 s` dibanding `~41 s` pada Random/Round-Robin untuk jumlah chunk yang hampir sama, 867 vs 866) diduga disebabkan kontensi I/O disk host selama pengulangan tunggal, bukan overhead komputasi pemilihan target Capacity-Aware.
-
-### 3.4 Skalabilitas (Throughput Upload terhadap Jumlah Node)
-
-![Skalabilitas Throughput Upload](figures/04_scalability_throughput.png)
-
-- **Fakta dari data**: Penambahan jumlah data node dari 3 ke 5 dan 8 node tidak menghasilkan peningkatan throughput upload yang signifikan:
-  - Round-Robin naik tipis dari `45,19 MB/s` (3 node) → `46,47 MB/s` (5 node) → `46,80 MB/s` (8 node), atau `+3,6%`.
-  - Capacity-Aware naik dari `43,43 MB/s` (3 node) → `44,42 MB/s` (5 node) → `46,52 MB/s` (8 node), atau `+7,1%`.
-  - Random naik dari `43,72 MB/s` (3 node) → `45,18 MB/s` (5 node), lalu turun ke `42,32 MB/s` (8 node).
-- **Dugaan penyebab**: Dalam topologi satu laptop, seluruh container berbagi satu antarmuka disk fisik dan CPU yang sama. Selain itu, skrip eksperimen menjalankan satu client yang mengunggah file secara berurutan (tidak ada konkurensi multi-client). Akibatnya, bottleneck bukan terletak pada kapasitas masing-masing data node, melainkan pada throughput tulis disk host dan overhead per-file client sehingga penambahan node belum mempercepat upload secara linear. Sebaliknya, manfaat skalabilitas jumlah node terlihat nyata pada **waktu pemulihan** yang turun ~65–70% dari 3 ke 8 node.
+  - Pada **3 node (`n=3` run)**, simpangan baku waktu pemulihan sangat besar: Random `48,44 ± 8,49 s`, Capacity-Aware `48,22 ± 7,46 s`, dan Round-Robin `76,61 ± 31,75 s` (dengan rentang `41,16–102,46 s` meski seluruh 867/867 chunk pulih tanpa error dan tanpa *false-positive* node mati). Karena simpangan baku besar dan interval saling tumpang tindih, **waktu pemulihan antar strategi pada `n=3` tidak dapat disimpulkan berbeda secara bermakna**.
+  - Pada **5 node** (`21,23–23,27 s`) dan **8 node** (`13,05–15,44 s`), data baru berasal dari **1 pengulangan (`n=1`)**, sehingga **tidak ada klaim perbandingan waktu pemulihan antar strategi** pada kedua ukuran klaster tersebut.
+  - Faktor yang jelas memengaruhi waktu pemulihan adalah **jumlah node** (yang menentukan jumlah chunk yang harus dipulihkan per node mati): ~850–867 chunk pada 3 node (`~40–102 s`) turun menjadi ~517–521 chunk pada 5 node (`~21–23 s`) dan ~311–325 chunk pada 8 node (`~13–15 s`).
+- **Dugaan penyebab**: Re-replication di `master/server.py` berjalan sekuensial satu chunk demi satu chunk, sehingga waktu pemulihan terutama sebanding dengan jumlah chunk yang disalin. Lonjakan Round-Robin pada `run2` (`102,46 s`) dan `run3` (`86,20 s`) merupakan **dugaan** kontensi I/O disk atau beban latar belakang host selama eksekusi panjang, bukan fakta keunggulan/kelemahan algoritma Round-Robin.
 
 ---
 
-## 4. Jawaban atas Pertanyaan Penelitian
+## 4. Skenario Kapasitas Heterogen (`node1=1024 MB`, `node2..node5=8192 MB`)
+
+Untuk menguji keunggulan Capacity-Aware pada klaster tidak seragam, dijalankan skenario 5 node dengan `node1` berkapasitas kecil (`1024 MB`) dan `node2..node5` berkapasitas `8192 MB` (`RF = 2`, chunk `4 MB`, 100 file @ 50 MB). Node yang dimatikan adalah `node2`. Sumber data: [upload_status.csv](../experiments/data/upload_status.csv), [hetero_capacity.csv](../experiments/data/hetero_capacity.csv), dan [recovery.csv](../experiments/data/recovery.csv).
+
+| Skenario | Strategi | Upload Berhasil | Upload Gagal | `node1` di Disk (chunk / free) | Total Chunk di Disk (termasuk yatim) | Chunk Yatim (*Orphan*) | Pemulihan `node2` (berhasil / total) | Tingkat Keberhasilan Pemulihan | Waktu Pemulihan* (s) |
+|---|---|---:|---:|---|---:|---:|---:|---:|---:|
+| `rnd_rf2_c4_n5_het` | Random | **52** | **48** | 264 chunk / `0,00 MB` | 1.476 | 124 | 198 / 258 | **76,7%** | 11,444* |
+| `rr_rf2_c4_n5_het` | Round-Robin | **51** | **49** | 266 chunk / `0,00 MB` | 1.489 | 163 | 221 / 265 | **83,4%** | 12,110* |
+| `cap_rf2_c4_n5_het` | Capacity-Aware | **100** | **0** | 0 chunk / `1024,00 MB` | 2.600 | 0 | 647 / 647 | **100,0%** | 34,478* |
+
+*\*Catatan penting: waktu pemulihan antar strategi pada skenario heterogen **tidak sebanding** secara langsung karena jumlah chunk yang dipulihkan sangat berbeda (`198`, `221`, dan `647` chunk). Demikian pula, jumlah file tersimpan berbeda (`52`, `51`, dan `100` file) sehingga throughput upload dan standar deviasi sebaran antar strategi tidak dibandingkan langsung. Metrik yang bermakna pada skenario ini adalah **tingkat keberhasilan upload** dan **tingkat keberhasilan pemulihan**.*
+
+![Keberhasilan Upload Klaster Heterogen](figures/05_hetero_upload_berhasil_gagal.png)
+
+![Sebaran Chunk Klaster Heterogen](figures/06_hetero_sebaran_chunk.png)
+
+*Keterangan Grafik 06: angka yang ditampilkan adalah total file chunk di disk masing-masing node (`ls /app/data/nodeN`), **termasuk chunk yatim (orphan chunks)** dari upload gagal yang belum di-commit (`124` chunk yatim pada Random, `163` pada Round-Robin, dan `0` pada Capacity-Aware).*
+
+- **Fakta dari data**:
+  - **Capacity-Aware** mencapai **100/100 upload berhasil (0 gagal)** dengan `node1` tidak terpakai (`0` chunk, sisa `1024 MB`) dan seluruh 2.600 replika tersebar sangat merata pada `node2..node5` (`647, 651, 650, 652` chunk; masing-masing menyisakan `5690–5694 MB`). Saat `node2` mati, **647/647 chunk (100%)** berhasil dipulihkan.
+  - **Random** hanya berhasil mengunggah **52/100 file** (gagal mulai `f053.bin`) dan **Round-Robin** hanya **51/100 file** (gagal mulai `f052.bin`) setelah `node1` mencapai batas `1024,00 MB` (`0,00 MB` tersisa).
+  - Terdapat **chunk yatim** pada Random (`1.476 - 1.352 = 124` chunk) dan Round-Robin (`1.489 - 1.326 = 163` chunk) karena upload gagal tidak melakukan *rollback*.
+  - Saat `node2` mati, Random hanya memulihkan **198/258 chunk (`76,7%`, 60 gagal)** dan Round-Robin hanya **221/265 chunk (`83,4%`, 44 gagal)**; tidak ada peringatan node lain mati pada ketiga skenario.
+- **Dugaan penyebab (terkonfirmasi dari kode)**:
+  - Di `master/placement.py`, `CapacityAwarePlacement` mengurutkan node berdasarkan `free_bytes` menurun dan langsung mengurangi `node.free_bytes -= chunk_size` secara lokal. Karena `node2..node5` selalu memiliki sisa >5.690 MB (>1.024 MB milik `node1`), `node1` tidak pernah terpilih baik saat upload maupun re-replication.
+  - Sebaliknya, `RandomPlacement` dan `RoundRobinPlacement` tidak memeriksa `free_bytes`, sehingga terus mengalokasikan chunk ke `node1` yang sudah penuh — baik saat upload (ditolak `datanode` dengan `Disk capacity exceeded`) maupun saat re-replication (ditolak `ReplicateChunk` dengan `ok=False`, yang dilewati tanpa log error dan tanpa *retry* di `master/server.py`).
+
+---
+
+## 5. Jawaban atas Pertanyaan Penelitian
 
 1. **Strategi mana yang paling seimbang?**
-   **Round-Robin** adalah strategi yang paling seimbang pada seluruh ukuran klaster yang diuji (`std` 0,00–0,87 chunk; `CV` ≤ 0,27%; selisih `max-min` 0–2 chunk). **Capacity-Aware** berada di posisi kedua dengan keseimbangan yang juga sangat baik (`std` 1,22–3,79 chunk; `CV` ≤ 0,73%), sedangkan **Random** paling tidak seimbang (`std` 8,01–11,95 chunk; `CV` hingga 3,68%).
+   Pada klaster homogen, **Round-Robin** paling seimbang (`std` `0,00–0,87` chunk; `CV` ≤ `0,27%`), diikuti ketat oleh **Capacity-Aware** (`std` `1,22–3,79` chunk; `CV` ≤ `0,73%`), sedangkan **Random** paling tidak merata (`std` `8,01–11,95` chunk; `CV` hingga `3,68%`). Pada klaster heterogen (`node1` 1 GB), **Capacity-Aware** adalah satu-satunya strategi yang mampu menghindari node berkapasitas kecil dan menjaga 100% keberhasilan upload (`100/100`) serta 100% keberhasilan pemulihan (`647/647`).
 2. **Strategi mana yang pemulihannya tercepat?**
-   Pada eksperimen 1 pengulangan ini, **tidak ada pemenang mutlak di seluruh ukuran klaster**: Random tercepat pada 3 node (`40,441 s`) dan 5 node (`21,230 s`), sedangkan Round-Robin tercepat pada 8 node (`13,050 s`). Perbedaan antar strategi pada 5 dan 8 node relatif kecil (~2 detik), yang menunjukkan bahwa pada mekanisme re-replication sekuensial, strategi penempatan hanya berpengaruh kecil selama jumlah chunk pada node yang mati relatif setara.
+   **Tidak dapat disimpulkan ada satu strategi yang paling cepat pemulihannya.** Pada `n=3` dengan 3 pengulangan, variasi antar run sangat besar (`Random 48,4 ± 8,5 s`, `Capacity-Aware 48,2 ± 7,5 s`, `Round-Robin 76,6 ± 31,8 s`), sementara `n=5` dan `n=8` baru memiliki 1 pengulangan. Pada klaster heterogen, waktu pemulihan tidak sebanding karena jumlah chunk yang dipulihkan berbeda jauh.
 3. **Bagaimana pengaruh jumlah node?**
-   - Terhadap **waktu pemulihan**: penambahan node berdampak sangat positif — meningkatkan klaster dari 3 ke 5 dan 8 node memangkas jumlah chunk per node dari ~867 menjadi ~520 dan ~325, sehingga waktu pemulihan turun dari `40,4–52,6 s` menjadi `21,2–23,3 s` (5 node) dan `13,1–15,4 s` (8 node).
-   - Terhadap **keseimbangan beban**: pada Random, ketimpangan relatif (`CV`) membesar dari `0,92%` (3 node) menjadi `3,68%` (8 node), sedangkan Round-Robin dan Capacity-Aware tetap stabil rendah (`CV` < 0,75%).
-   - Terhadap **throughput upload**: pengaruhnya kecil pada pengujian host tunggal (`42,3–46,8 MB/s`) karena keterbatasan disk bersama dan beban upload sekuensial dari satu client.
+   Penambahan jumlah node (3 → 5 → 8) secara konsisten memangkas jumlah chunk per node (~867 → ~520 → ~325) dan **mempercepat waktu pemulihan secara drastis** (dari ~40–102 s menjadi ~21–23 s dan ~13–15 s). Terhadap throughput upload di host tunggal, pengaruhnya kecil karena bottleneck disk bersama dan client sekuensial.
 
 ---
 
-## 5. Batasan Eksperimen
+## 6. Bonus Kubernetes (Status Persiapan)
 
-1. **Eksekusi pada satu laptop (single-host Docker)**: Seluruh container berjalan di satu mesin fisik (Docker `29.9.2`) dengan jaringan bridge lokal, sehingga latensi jaringan antar node sangat kecil dan semua node memperebutkan CPU serta disk fisik yang sama. Angka throughput dan waktu pemulihan tidak dapat langsung disamakan dengan klaster fisik multi-mesin.
-2. **Kapasitas virtual homogen**: Seluruh data node dikonfigurasi dengan kapasitas virtual identik (`8192 MB`), sehingga **Capacity-Aware** tidak menghadapi node dengan kapasitas berbeda atau node yang hampir penuh untuk dihindari. Keunggulan khas Capacity-Aware pada klaster heterogen belum teruji dalam rangkaian ini.
-3. **Strategi Random tanpa seed tetap**: Implementasi `random` saat ini tidak mengatur `random.seed` tetap, sehingga distribusi chunk acak dan jumlah chunk pada `node2` bervariasi antar eksekusi.
-4. **Jumlah pengulangan terbatas**: Dataset utama ini menggunakan **1 pengulangan** per skenario (masing-masing 100 file @ 50 MB, total ~51 menit untuk 9 skenario), sehingga variasi acak akibat aktivitas latar belakang sistem operasi (misalnya `cap_rf2_c4_n3` sebesar `52,578 s`) belum dirata-ratakan dari beberapa kali uji.
-5. **Pengukuran waktu deteksi**: Waktu deteksi diukur dari timestamp host saat perintah `docker kill` selesai hingga timestamp log `NODE MATI terdeteksi` di master. Nilai ini mencakup jeda polling `monitor_loop` (interval 2 detik) serta sedikit perbedaan waktu eksekusi antara perintah `docker kill` dan detak heartbeat terakhir sebelum container berhenti, sehingga hasil berkisar `27,34–31,40 s` di sekitar `HEARTBEAT_TIMEOUT = 30 s`.
+Manifest Kubernetes telah disiapkan di [deploy/k8s/](../deploy/k8s/README.md) (`master.yaml`, `datanode.yaml` StatefulSet 3 replika dengan PVC 2 GiB, `client-job.yaml`, dan `README.md`). Pengujian langsung di cluster `kind` **belum dijalankan** karena tool `kind` belum terpasang di laptop pengujian; panduan pemasangan dan skenario uji (4 pod Running, upload/download 50 MB + SHA-256, `kubectl delete pod datanode-1`, dan scaling ke 5 replika) terdokumentasi di [deploy/k8s/README.md](../deploy/k8s/README.md).
+
+---
+
+## 7. Batasan Eksperimen
+
+1. **Eksekusi satu laptop (single-host Docker)**: Seluruh container berjalan di satu host fisik (Docker `29.9.2`, spesifikasi fisik `[ISI MANUAL: CPU/RAM]`) dengan jaringan bridge lokal, sehingga latensi jaringan sangat kecil dan seluruh node memperebutkan CPU serta disk fisik yang sama.
+2. **Kapasitas homogen pada 9 skenario utama**: Pada rangkaian 9 skenario utama, seluruh node memakai `--capacity-mb 8192`; keunggulan Capacity-Aware baru tampak ketika diuji pada skenario heterogen (`node1=1024 MB`).
+3. **Strategi Random tidak di-seed**: Tanpa `random.seed` tetap, distribusi chunk dan jumlah chunk di `node2` berbeda antar eksekusi.
+4. **Jumlah pengulangan terbatas**: Pengulangan 3× baru dilakukan pada konfigurasi `n=3`; konfigurasi `n=5`, `n=8`, dan heterogen baru 1 pengulangan (`n=1`).
+5. **Pengukuran waktu deteksi**: Diukur dari timestamp host saat `docker kill` selesai hingga log `NODE MATI terdeteksi` di master (mencakup jeda polling `monitor_loop` 2 detik dan jitter penjadwalan), menghasilkan rentang `27,34–31,40 s` di sekitar `HEARTBEAT_TIMEOUT = 30 s`.
+
+---
+
+## 8. Pekerjaan Lanjutan (*Future Work*)
+
+Berdasarkan temuan eksperimen dan inspeksi kode tanpa mengubah arsitektur inti saat ini, perbaikan yang direkomendasikan untuk pengembangan berikutnya meliputi:
+
+1. **Paralelisasi dan *retry* pada re-replication**: Saat ini `rereplicate` di `master/server.py` menyalin chunk secara sekuensial satu per satu; selain itu, kegagalan `ReplicateChunk` yang mengembalikan `ok=False` (mis. karena disk target penuh) dilewati secara senyap tanpa log peringatan dan tanpa *retry* ke node kandidat lain.
+2. **Rollback upload gagal / pembersihan *orphan chunks***: Ketika upload file gagal di tengah jalan (seperti pada skenario heterogen Random/Round-Robin), chunk yang sudah terlanjur ditulis ke data node lain tidak dihapus sehingga menumpuk sebagai chunk yatim di disk. Diperlukan mekanisme *rollback* atau *garbage collector* periodik.
+3. **Penghapusan replika berlebih (*over-replication cleanup*)**: Ketika node yang sempat dianggap mati kembali hidup (`node hidup kembali`), replika lama di node tersebut tidak dibersihkan meskipun master sudah membuat replika baru di node lain, sehingga jumlah replika melebihi RF.
+4. **Reproduksibilitas strategi Random**: Menambahkan parameter seed opsional (`random.seed`) pada `RandomPlacement` agar eksperimen acak dapat direproduksi persis antar pengujian.
+5. **Ketersediaan tinggi Master (*Single Master*)**: Sistem saat ini memakai satu master tunggal (*single point of failure*) dengan metadata di memori; pengembangan lanjutan dapat menambahkan persistensi metadata atau replikasi master (mis. Raft).

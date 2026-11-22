@@ -7,6 +7,8 @@ param(
   [int]$FileMb = 50,
   [int]$KillIndex = 2,
   [int]$Repeat = 1,
+  [int]$StartRun = 1,
+  [switch]$Hetero,
   [switch]$Force
 )
 
@@ -26,6 +28,14 @@ $composeFor = @{
   5 = 'deploy/dockerCompose.5.yml'
   8 = 'deploy/dockerCompose.8.yml'
 }
+if ($Hetero) {
+  $Nodes = @(5)
+  $composeFor[5] = 'deploy/dockerCompose.hetero.yml'
+  if ($KillIndex -eq 1) {
+    Write-Host "PERINGATAN: mode -Hetero tidak boleh mematikan node1 (node berkapasitas 1024 MB); dialihkan ke node2." -ForegroundColor Yellow
+    $KillIndex = 2
+  }
+}
 $cleanupCompose = 'deploy/dockerCompose.8.yml'   # superset, membersihkan semua volume
 
 function Run($cmd) { cmd /c "$cmd 2>&1" }
@@ -44,8 +54,14 @@ function Remove-ScenarioRows($path, $scenarioName) {
 
 $lbCsv  = Join-Path $dataDir 'load_balance.csv'
 $recCsv = Join-Path $dataDir 'recovery.csv'
+$upStatCsv = Join-Path $dataDir 'upload_status.csv'
+$hetCapCsv = Join-Path $dataDir 'hetero_capacity.csv'
 Ensure-Header $lbCsv  'skenario,strategi,rf,chunk_mb,nodes,node_id,chunk_count'
 Ensure-Header $recCsv 'skenario,strategi,rf,chunk_mb,nodes,chunks_dipulihkan,waktu_deteksi_s,waktu_pemulihan_s,chunks_total'
+Ensure-Header $upStatCsv 'skenario,strategi,rf,chunk_mb,nodes,hetero,files_total,upload_ok,upload_gagal,total_s'
+if ($Hetero) {
+  Ensure-Header $hetCapCsv 'skenario,strategi,node_id,capacity_mb,chunk_count,used_mb,free_mb'
+}
 
 # File dasar acak (satu file dipakai untuk semua upload dengan nama berbeda)
 $base = "base_${FileMb}mb.bin"
@@ -65,9 +81,11 @@ foreach ($n in $Nodes) {
   if (-not $cf) { Write-Host "Ukuran cluster $n tidak punya file Compose, dilewati."; continue }
 
   foreach ($st in $Strategies) {
-    for ($rep = 1; $rep -le $Repeat; $rep++) {
-    $suffix = if ($Repeat -gt 1) { "_run$rep" } else { "" }
-    $sk    = "{0}_rf{1}_c{2}_n{3}{4}" -f $short[$st], $Rf, $ChunkMb, $n, $suffix
+    $endRun = $StartRun + $Repeat - 1
+    for ($rep = $StartRun; $rep -le $endRun; $rep++) {
+    $hetTag = if ($Hetero) { "_het" } else { "" }
+    $runTag = if ($Repeat -gt 1 -or $StartRun -gt 1) { "_run$rep" } else { "" }
+    $sk    = "{0}_rf{1}_c{2}_n{3}{4}{5}" -f $short[$st], $Rf, $ChunkMb, $n, $hetTag, $runTag
     $upCsv = Join-Path $dataDir "upload_download_$sk.csv"
     if ((Test-Path $upCsv) -and -not $Force) { Write-Host "[$sk] sudah ada, dilewati (pakai -Force untuk ulang)"; continue }
 
@@ -98,16 +116,28 @@ foreach ($n in $Nodes) {
       if ($i % 10 -eq 0) { Write-Host "  upload $i/$Files" }
     }
     $totalS = ((Get-Date) - $t0).TotalSeconds
-    Write-Host ("  upload selesai: {0} gagal, total {1:N1} detik" -f $fail, $totalS)
+    $okUploads = $Files - $fail
+    Write-Host ("  upload selesai: {0} berhasil, {1} gagal, total {2:N1} detik" -f $okUploads, $fail, $totalS)
+    Remove-ScenarioRows $upStatCsv $sk
+    Add-Content -Path $upStatCsv -Value ("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}" -f $sk, $st, $Rf, $ChunkMb, $n, [int]$Hetero.IsPresent, $Files, $okUploads, $fail, $totalS.ToString('F2', $inv)) -Encoding ascii
 
     $metrics = Join-Path $resDir 'client_metrics.csv'
     if (Test-Path $metrics) { Copy-Item $metrics $upCsv -Force }
 
     # 4. Sebaran chunk per node (hapus baris lama skenario ini jika ada)
     Remove-ScenarioRows $lbCsv $sk
+    if ($Hetero) { Remove-ScenarioRows $hetCapCsv $sk }
     for ($i = 1; $i -le $n; $i++) {
       $c = ((Run "docker exec silifs-datanode$i sh -c `"ls /app/data/node$i | wc -l`"") -join '').Trim()
       Add-Content -Path $lbCsv -Value ("{0},{1},{2},{3},{4},node{5},{6}" -f $sk, $st, $Rf, $ChunkMb, $n, $i, $c) -Encoding ascii
+      if ($Hetero) {
+        $capMb = if ($i -eq 1) { 1024 } else { 8192 }
+        $usedBytesStr = ((Run "docker exec sili fs-datanode$i sh -c `"du -sb /app/data/node$i | cut -f1`"") -join '').Trim()
+        $usedMb = 0.0
+        if ($usedBytesStr -match '^\d+$') { $usedMb = [double]$usedBytesStr / (1024.0 * 1024.0) }
+        $freeMb = [math]::Max($capMb - $usedMb, 0.0)
+        Add-Content -Path $hetCapCsv -Value ("{0},{1},node{2},{3},{4},{5},{6}" -f $sk, $st, $i, $capMb, $c, $usedMb.ToString('F2', $inv), $freeMb.ToString('F2', $inv)) -Encoding ascii
+      }
     }
 
     # 5. Matikan satu node, ukur deteksi dan pemulihan
