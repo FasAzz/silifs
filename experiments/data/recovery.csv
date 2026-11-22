@@ -8,3 +8,12 @@ cap_rf2_c4_n5,capacity_aware,2,4,5,521,31.400,22.485,521
 rnd_rf2_c4_n8,random,2,4,8,311,28.865,13.950,311
 rr_rf2_c4_n8,round_robin,2,4,8,325,27.342,13.050,325
 cap_rf2_c4_n8,capacity_aware,2,4,8,323,28.108,15.438,323
+rnd_rf2_c4_n5_het,random,2,4,5,198,28.816,11.444,258
+rr_rf2_c4_n5_het,round_robin,2,4,5,221,29.860,12.110,265
+cap_rf2_c4_n5_het,capacity_aware,2,4,5,647,28.640,34.478,647
+rnd_rf2_c4_n3_run2,random,2,4,3,831,29.599,47.535,831
+rnd_rf2_c4_n3_run3,random,2,4,3,859,28.340,57.356,859
+rr_rf2_c4_n3_run2,round_robin,2,4,3,867,28.631,102.461,867
+rr_rf2_c4_n3_run3,round_robin,2,4,3,867,29.203,86.196,867
+cap_rf2_c4_n3_run2,capacity_aware,2,4,3,865,30.865,52.463,865
+cap_rf2_c4_n3_run3,capacity_aware,2,4,3,866,29.489,39.606,866

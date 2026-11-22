@@ -1,0 +1,161 @@
+2026-11-22T10:11:42.085609898Z 10:11:42.085 [master] master berjalan di port 50051
+2026-11-22T10:11:42.145496629Z 10:11:42.145 [master] node terdaftar: node2 (datanode2:50052)
+2026-11-22T10:11:42.284807052Z 10:11:42.284 [master] node terdaftar: node4 (datanode4:50052)
+2026-11-22T10:11:42.573709830Z 10:11:42.573 [master] node terdaftar: node3 (datanode3:50052)
+2026-11-22T10:11:42.885237312Z 10:11:42.884 [master] node terdaftar: node1 (datanode1:50052)
+2026-11-22T10:11:43.091957988Z 10:11:43.091 [master] node terdaftar: node5 (datanode5:50052)
+2026-11-22T10:11:46.157393494Z 10:11:46.157 [master] alokasi f001.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:11:47.831332335Z 10:11:47.831 [master] file commit: f001.bin
+2026-11-22T10:11:49.447709293Z 10:11:49.447 [master] alokasi f002.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:11:50.881512986Z 10:11:50.881 [master] file commit: f002.bin
+2026-11-22T10:11:52.562551089Z 10:11:52.562 [master] alokasi f003.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:11:53.906127236Z 10:11:53.905 [master] file commit: f003.bin
+2026-11-22T10:11:55.643392523Z 10:11:55.643 [master] alokasi f004.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:11:57.012072936Z 10:11:57.011 [master] file commit: f004.bin
+2026-11-22T10:11:58.629884936Z 10:11:58.629 [master] alokasi f005.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:00.015034255Z 10:12:00.014 [master] file commit: f005.bin
+2026-11-22T10:12:01.390670843Z 10:12:01.390 [master] alokasi f006.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:02.966291420Z 10:12:02.965 [master] file commit: f006.bin
+2026-11-22T10:12:04.724808937Z 10:12:04.724 [master] alokasi f007.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:06.130609530Z 10:12:06.130 [master] file commit: f007.bin
+2026-11-22T10:12:07.597051029Z 10:12:07.596 [master] alokasi f008.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:08.959936887Z 10:12:08.959 [master] file commit: f008.bin
+2026-11-22T10:12:10.921263775Z 10:12:10.920 [master] alokasi f009.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:12.291944909Z 10:12:12.291 [master] file commit: f009.bin
+2026-11-22T10:12:13.892419337Z 10:12:13.892 [master] alokasi f010.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:15.225647089Z 10:12:15.225 [master] file commit: f010.bin
+2026-11-22T10:12:17.133775935Z 10:12:17.133 [master] alokasi f011.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:18.480249016Z 10:12:18.479 [master] file commit: f011.bin
+2026-11-22T10:12:20.064561911Z 10:12:20.064 [master] alokasi f012.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:21.539264392Z 10:12:21.538 [master] file commit: f012.bin
+2026-11-22T10:12:23.142175523Z 10:12:23.141 [master] alokasi f013.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:24.293064171Z 10:12:24.292 [master] file commit: f013.bin
+2026-11-22T10:12:25.745159658Z 10:12:25.744 [master] alokasi f014.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:27.090009375Z 10:12:27.089 [master] file commit: f014.bin
+2026-11-22T10:12:28.524530416Z 10:12:28.524 [master] alokasi f015.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:29.718198829Z 10:12:29.717 [master] file commit: f015.bin
+2026-11-22T10:12:31.225925020Z 10:12:31.225 [master] alokasi f016.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:32.526470713Z 10:12:32.526 [master] file commit: f016.bin
+2026-11-22T10:12:33.886338359Z 10:12:33.885 [master] alokasi f017.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:35.213592327Z 10:12:35.213 [master] file commit: f017.bin
+2026-11-22T10:12:37.038406647Z 10:12:37.038 [master] alokasi f018.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:38.690775273Z 10:12:38.690 [master] file commit: f018.bin
+2026-11-22T10:12:40.092789830Z 10:12:40.092 [master] alokasi f019.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:41.302161785Z 10:12:41.301 [master] file commit: f019.bin
+2026-11-22T10:12:42.971970846Z 10:12:42.971 [master] alokasi f020.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:44.496289220Z 10:12:44.495 [master] file commit: f020.bin
+2026-11-22T10:12:46.261761899Z 10:12:46.261 [master] alokasi f021.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:47.653867050Z 10:12:47.653 [master] file commit: f021.bin
+2026-11-22T10:12:49.166250854Z 10:12:49.165 [master] alokasi f022.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:50.430884153Z 10:12:50.430 [master] file commit: f022.bin
+2026-11-22T10:12:51.883112684Z 10:12:51.882 [master] alokasi f023.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:53.161257871Z 10:12:53.160 [master] file commit: f023.bin
+2026-11-22T10:12:54.563447933Z 10:12:54.563 [master] alokasi f024.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:55.910176239Z 10:12:55.909 [master] file commit: f024.bin
+2026-11-22T10:12:57.506715717Z 10:12:57.506 [master] alokasi f025.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:12:58.839760250Z 10:12:58.839 [master] file commit: f025.bin
+2026-11-22T10:13:00.214776389Z 10:13:00.214 [master] alokasi f026.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:01.612854708Z 10:13:01.612 [master] file commit: f026.bin
+2026-11-22T10:13:03.159309645Z 10:13:03.158 [master] alokasi f027.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:04.311278909Z 10:13:04.310 [master] file commit: f027.bin
+2026-11-22T10:13:05.787319819Z 10:13:05.787 [master] alokasi f028.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:07.255152731Z 10:13:07.254 [master] file commit: f028.bin
+2026-11-22T10:13:09.034668438Z 10:13:09.034 [master] alokasi f029.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:10.340076410Z 10:13:10.339 [master] file commit: f029.bin
+2026-11-22T10:13:11.910113583Z 10:13:11.909 [master] alokasi f030.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:13.255182826Z 10:13:13.254 [master] file commit: f030.bin
+2026-11-22T10:13:14.932382589Z 10:13:14.931 [master] alokasi f031.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:16.135936338Z 10:13:16.135 [master] file commit: f031.bin
+2026-11-22T10:13:17.493780859Z 10:13:17.493 [master] alokasi f032.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:18.860832426Z 10:13:18.860 [master] file commit: f032.bin
+2026-11-22T10:13:20.407622045Z 10:13:20.407 [master] alokasi f033.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:21.636920450Z 10:13:21.636 [master] file commit: f033.bin
+2026-11-22T10:13:23.107618087Z 10:13:23.107 [master] alokasi f034.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:24.557766652Z 10:13:24.557 [master] file commit: f034.bin
+2026-11-22T10:13:26.124188530Z 10:13:26.123 [master] alokasi f035.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:27.349338093Z 10:13:27.348 [master] file commit: f035.bin
+2026-11-22T10:13:28.882690546Z 10:13:28.882 [master] alokasi f036.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:30.304758158Z 10:13:30.304 [master] file commit: f036.bin
+2026-11-22T10:13:31.824669747Z 10:13:31.824 [master] alokasi f037.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:33.059207892Z 10:13:33.058 [master] file commit: f037.bin
+2026-11-22T10:13:34.467463291Z 10:13:34.467 [master] alokasi f038.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:35.896349571Z 10:13:35.896 [master] file commit: f038.bin
+2026-11-22T10:13:37.603937833Z 10:13:37.603 [master] alokasi f039.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:38.780876918Z 10:13:38.780 [master] file commit: f039.bin
+2026-11-22T10:13:40.275849792Z 10:13:40.275 [master] alokasi f040.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:41.584648345Z 10:13:41.584 [master] file commit: f040.bin
+2026-11-22T10:13:43.161223775Z 10:13:43.160 [master] alokasi f041.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:44.388918844Z 10:13:44.388 [master] file commit: f041.bin
+2026-11-22T10:13:45.900089954Z 10:13:45.899 [master] alokasi f042.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:47.257147755Z 10:13:47.256 [master] file commit: f042.bin
+2026-11-22T10:13:48.885283890Z 10:13:48.884 [master] alokasi f043.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:50.169293515Z 10:13:50.168 [master] file commit: f043.bin
+2026-11-22T10:13:51.817438995Z 10:13:51.817 [master] alokasi f044.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:53.219140600Z 10:13:53.218 [master] file commit: f044.bin
+2026-11-22T10:13:54.715013548Z 10:13:54.714 [master] alokasi f045.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:56.109361474Z 10:13:56.108 [master] file commit: f045.bin
+2026-11-22T10:13:57.875580389Z 10:13:57.875 [master] alokasi f046.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:13:59.124563768Z 10:13:59.124 [master] file commit: f046.bin
+2026-11-22T10:14:00.623246044Z 10:14:00.622 [master] alokasi f047.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:02.256657157Z 10:14:02.256 [master] file commit: f047.bin
+2026-11-22T10:14:03.716573918Z 10:14:03.716 [master] alokasi f048.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:05.056333697Z 10:14:05.055 [master] file commit: f048.bin
+2026-11-22T10:14:07.114882387Z 10:14:07.114 [master] alokasi f049.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:08.452498176Z 10:14:08.452 [master] file commit: f049.bin
+2026-11-22T10:14:10.060258041Z 10:14:10.059 [master] alokasi f050.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:11.443089838Z 10:14:11.442 [master] file commit: f050.bin
+2026-11-22T10:14:13.186581793Z 10:14:13.186 [master] alokasi f051.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:14.641621417Z 10:14:14.641 [master] file commit: f051.bin
+2026-11-22T10:14:16.412603853Z 10:14:16.412 [master] alokasi f052.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:18.065857570Z 10:14:18.065 [master] file commit: f052.bin
+2026-11-22T10:14:19.888988843Z 10:14:19.888 [master] alokasi f053.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:22.266585112Z 10:14:22.265 [master] alokasi f054.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:23.968074323Z 10:14:23.967 [master] alokasi f055.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:25.461283400Z 10:14:25.461 [master] alokasi f056.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:27.622559848Z 10:14:27.622 [master] alokasi f057.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:29.201287085Z 10:14:29.201 [master] alokasi f058.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:30.729557193Z 10:14:30.729 [master] alokasi f059.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:32.837023992Z 10:14:32.836 [master] alokasi f060.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:34.462561104Z 10:14:34.462 [master] alokasi f061.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:35.999440044Z 10:14:35.999 [master] alokasi f062.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:37.473427123Z 10:14:37.472 [master] alokasi f063.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:39.085401165Z 10:14:39.085 [master] alokasi f064.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:40.783827531Z 10:14:40.783 [master] alokasi f065.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:42.345051714Z 10:14:42.344 [master] alokasi f066.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:44.200895809Z 10:14:44.200 [master] alokasi f067.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:45.675576255Z 10:14:45.675 [master] alokasi f068.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:47.084540085Z 10:14:47.084 [master] alokasi f069.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:48.624057175Z 10:14:48.623 [master] alokasi f070.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:50.118671501Z 10:14:50.118 [master] alokasi f071.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:51.962701549Z 10:14:51.962 [master] alokasi f072.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:53.918638891Z 10:14:53.918 [master] alokasi f073.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:55.705653194Z 10:14:55.705 [master] alokasi f074.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:57.698810900Z 10:14:57.698 [master] alokasi f075.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:14:59.911372211Z 10:14:59.911 [master] alokasi f076.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:01.594474494Z 10:15:01.594 [master] alokasi f077.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:03.159487238Z 10:15:03.159 [master] alokasi f078.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:04.948205481Z 10:15:04.947 [master] alokasi f079.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:06.590352552Z 10:15:06.590 [master] alokasi f080.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:08.738348313Z 10:15:08.738 [master] alokasi f081.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:10.610914048Z 10:15:10.610 [master] alokasi f082.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:12.549137537Z 10:15:12.548 [master] alokasi f083.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:14.057363016Z 10:15:14.057 [master] alokasi f084.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:16.048265320Z 10:15:16.047 [master] alokasi f085.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:18.075747432Z 10:15:18.075 [master] alokasi f086.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:20.095454022Z 10:15:20.095 [master] alokasi f087.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:21.567686681Z 10:15:21.567 [master] alokasi f088.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:23.170971643Z 10:15:23.170 [master] alokasi f089.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:24.938299257Z 10:15:24.938 [master] alokasi f090.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:26.585872013Z 10:15:26.585 [master] alokasi f091.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:28.244360058Z 10:15:28.244 [master] alokasi f092.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:29.892184673Z 10:15:29.891 [master] alokasi f093.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:31.908328222Z 10:15:31.908 [master] alokasi f094.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:33.422281810Z 10:15:33.422 [master] alokasi f095.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:34.968328930Z 10:15:34.967 [master] alokasi f096.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:37.393070322Z 10:15:37.392 [master] alokasi f097.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:38.992650131Z 10:15:38.992 [master] alokasi f098.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:40.467586934Z 10:15:40.467 [master] alokasi f099.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:15:42.166031300Z 10:15:42.165 [master] alokasi f100.bin: 13 chunk, RF=2, strategi=random
+2026-11-22T10:16:14.086797113Z 10:16:14.086 [master] NODE MATI terdeteksi: node2
+2026-11-22T10:16:14.088152880Z 10:16:14.087 [master] re-replication: 258 chunk perlu dipulihkan (node mati: node2)
+2026-11-22T10:16:25.530951582Z 10:16:25.530 [master] PEMULIHAN SELESAI: 198/258 chunk, waktu pemulihan = 11.444 detik

@@ -1,0 +1,16 @@
+skenario,strategi,node_id,capacity_mb,chunk_count,used_mb,free_mb
+rnd_rf2_c4_n5_het,random,node1,1024,264,1024.00,0.00
+rnd_rf2_c4_n5_het,random,node2,8192,297,1138.00,7054.00
+rnd_rf2_c4_n5_het,random,node3,8192,315,1210.00,6982.00
+rnd_rf2_c4_n5_het,random,node4,8192,302,1176.00,7016.00
+rnd_rf2_c4_n5_het,random,node5,8192,298,1148.00,7044.00
+rr_rf2_c4_n5_het,round_robin,node1,1024,266,1024.00,0.00
+rr_rf2_c4_n5_het,round_robin,node2,8192,335,1298.00,6894.00
+rr_rf2_c4_n5_het,round_robin,node3,8192,316,1222.00,6970.00
+rr_rf2_c4_n5_het,round_robin,node4,8192,276,1064.00,7128.00
+rr_rf2_c4_n5_het,round_robin,node5,8192,296,1144.00,7048.00
+cap_rf2_c4_n5_het,capacity_aware,node1,1024,0,0.00,1024.00
+cap_rf2_c4_n5_het,capacity_aware,node2,8192,647,2500.00,5692.00
+cap_rf2_c4_n5_het,capacity_aware,node3,8192,651,2498.00,5694.00
+cap_rf2_c4_n5_het,capacity_aware,node4,8192,650,2500.00,5692.00
+cap_rf2_c4_n5_het,capacity_aware,node5,8192,652,2502.00,5690.00
