@@ -19,8 +19,8 @@
 - [x] Uji re-replication end-to-end: 3 node 8/8 chunk (0,295 s), 5 node 3/3 chunk (0,090 s)
 - [x] `deploy/`: Dockerfile, Compose 3/5/8 node, service `client` (Fasha)
 - [x] Hasil eksperimen awal: `experiments/data/` (rr, RF 2, chunk 4 MB, 8 node)
-- [ ] `experiments/`: skrip eksperimen otomatis dan analisis (Fajar, Fasha)
-- [ ] Eksperimen skala penuh di Docker: 100 file @ 50 MB, 3 strategi x 3 ukuran cluster (Fasha menjalankan)
+- [x] `experiments/`: skrip eksperimen otomatis (`run_experiment.ps1`) dan analisis (`analyze.py`) beserta grafik di `docs/figures/` (Fajar, Fasha)
+- [x] Eksperimen skala penuh di Docker: 100 file @ 50 MB, 3 strategi x 3 ukuran cluster (3, 5, 8 node), RF 2, chunk 4 MB, `HEARTBEAT_TIMEOUT = 30 s` (`experiments/data/`, `docs/hasil_eksperimen.md`)
 - [ ] Variasi RF (1, 2, 3) dan chunk size (1, 4, 8 MB) dengan beban kecil
 - [ ] Laporan IEEE 6 bab, video demo maksimal 10 menit, README final (Fajar)
 - [ ] Bonus: Kubernetes (kind) dan integrasi dashboard (Fasha dan Azhar)
