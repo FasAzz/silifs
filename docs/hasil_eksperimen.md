@@ -7,7 +7,7 @@ Dokumen ini menyajikan hasil eksperimen perbandingan tiga strategi penempatan re
 ## 1. Metodologi dan Lingkungan Eksperimen
 
 - **Lingkungan host**:
-  - Spesifikasi fisik laptop: `[ISI MANUAL: CPU/RAM]` (versi Windows: `[ISI MANUAL: Versi Windows]`).
+  - Spesifikasi fisik laptop: `[AMD Ryzen 5 5500U with Nvidia GeForce RTX 3050]` (versi Windows: `Windows 11 Pro`).
   - Engine Docker: Docker Desktop versi `29.9.2` (alokasi engine tercatat via `docker info`: `12` vCPU, `7,44 GiB` RAM).
 - **Konfigurasi beban utama (homogen)**: 100 file biner acak berukuran 50 MB per file (total 5.000 MB data logis), *replication factor* `RF = 2`, ukuran chunk `4 MB` (13 chunk per file → 1.300 chunk unik atau **2.600 replika** per skenario).
   - Strategi: `random` (`rnd`), `round_robin` (`rr`), `capacity_aware` (`cap`).
@@ -137,7 +137,7 @@ Manifest Kubernetes telah disiapkan di [deploy/k8s/](../deploy/k8s/README.md) (`
 
 ## 7. Batasan Eksperimen
 
-1. **Eksekusi satu laptop (single-host Docker)**: Seluruh container berjalan di satu host fisik (Docker `29.9.2`, spesifikasi fisik `[ISI MANUAL: CPU/RAM]`) dengan jaringan bridge lokal, sehingga latensi jaringan sangat kecil dan seluruh node memperebutkan CPU serta disk fisik yang sama.
+1. **Eksekusi satu laptop (single-host Docker)**: Seluruh container berjalan di satu host fisik (Docker `29.9.2`, spesifikasi fisik `[AMD Ryzen 5 5500U with Nvidia GeForce RTX 3050]`) dengan jaringan bridge lokal, sehingga latensi jaringan sangat kecil dan seluruh node memperebutkan CPU serta disk fisik yang sama.
 2. **Kapasitas homogen pada 9 skenario utama**: Pada rangkaian 9 skenario utama, seluruh node memakai `--capacity-mb 8192`; keunggulan Capacity-Aware baru tampak ketika diuji pada skenario heterogen (`node1=1024 MB`).
 3. **Strategi Random tidak di-seed**: Tanpa `random.seed` tetap, distribusi chunk dan jumlah chunk di `node2` berbeda antar eksekusi.
 4. **Jumlah pengulangan terbatas**: Pengulangan 3× baru dilakukan pada konfigurasi `n=3`; konfigurasi `n=5`, `n=8`, dan heterogen baru 1 pengulangan (`n=1`).
