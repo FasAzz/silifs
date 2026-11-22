@@ -1,0 +1,10 @@
+skenario,strategi,rf,chunk_mb,nodes,chunks_dipulihkan,waktu_deteksi_s,waktu_pemulihan_s,chunks_total
+rnd_rf2_c4_n3,random,2,4,3,861,29.734,40.441,861
+rr_rf2_c4_n3,round_robin,2,4,3,866,29.702,41.163,866
+cap_rf2_c4_n3,capacity_aware,2,4,3,867,28.026,52.578,867
+rnd_rf2_c4_n5,random,2,4,5,517,29.874,21.230,517
+rr_rf2_c4_n5,round_robin,2,4,5,520,27.849,23.273,520
+cap_rf2_c4_n5,capacity_aware,2,4,5,521,31.400,22.485,521
+rnd_rf2_c4_n8,random,2,4,8,311,28.865,13.950,311
+rr_rf2_c4_n8,round_robin,2,4,8,325,27.342,13.050,325
+cap_rf2_c4_n8,capacity_aware,2,4,8,323,28.108,15.438,323

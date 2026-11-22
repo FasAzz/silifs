@@ -15,7 +15,7 @@ services:
     image: silifs:latest
     container_name: silifs-datanode1
     command: >
-      python -m datanode.server --node-id node1 --port 50052
+      python -m datanode.server --node-id node1 --port 50052 --capacity-mb 8192
       --master master:50051 --advertise datanode1:50052
     volumes:
       - node1-data:/app/data
@@ -28,7 +28,7 @@ services:
     image: silifs:latest
     container_name: silifs-datanode2
     command: >
-      python -m datanode.server --node-id node2 --port 50052
+      python -m datanode.server --node-id node2 --port 50052 --capacity-mb 8192
       --master master:50051 --advertise datanode2:50052
     volumes:
       - node2-data:/app/data
@@ -41,7 +41,7 @@ services:
     image: silifs:latest
     container_name: silifs-datanode3
     command: >
-      python -m datanode.server --node-id node3 --port 50052
+      python -m datanode.server --node-id node3 --port 50052 --capacity-mb 8192
       --master master:50051 --advertise datanode3:50052
     volumes:
       - node3-data:/app/data
@@ -54,7 +54,7 @@ services:
     image: silifs:latest
     container_name: silifs-datanode4
     command: >
-      python -m datanode.server --node-id node4 --port 50052
+      python -m datanode.server --node-id node4 --port 50052 --capacity-mb 8192
       --master master:50051 --advertise datanode4:50052
     volumes:
       - node4-data:/app/data
@@ -67,7 +67,7 @@ services:
     image: silifs:latest
     container_name: silifs-datanode5
     command: >
-      python -m datanode.server --node-id node5 --port 50052
+      python -m datanode.server --node-id node5 --port 50052 --capacity-mb 8192
       --master master:50051 --advertise datanode5:50052
     volumes:
       - node5-data:/app/data

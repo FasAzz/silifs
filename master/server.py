@@ -12,7 +12,7 @@ from common import silifs_pb2_grpc as pb_grpc
 from master.placement import NodeInfo, get_strategy
 
 PORT = 50051
-HEARTBEAT_TIMEOUT = 10          # detik tanpa heartbeat = node dianggap mati
+HEARTBEAT_TIMEOUT = 30          # detik tanpa heartbeat = node dianggap mati
 MAX_MSG = 16 * 1024 * 1024      # naikkan batas 4 MB bawaan gRPC
 
 CHANNEL_OPTS = [
