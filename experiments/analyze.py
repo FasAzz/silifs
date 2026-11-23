@@ -16,6 +16,9 @@ Menghasilkan:
 - docs/figures/04_scalability_throughput.png
 - docs/figures/05_hetero_upload_berhasil_gagal.png
 - docs/figures/06_hetero_sebaran_chunk.png
+- docs/figures/07_latensi_waktu_akses.png
+- docs/figures/08_speedup_efficiency.png
+- experiments/data/speedup_efficiency.csv
 """
 
 from pathlib import Path
@@ -568,15 +571,160 @@ def plot_hetero_figures(notes: list[str]):
     plt.close(fig)
 
 
+def compute_speedup_efficiency(summary_df: pd.DataFrame, repeat_df: pd.DataFrame) -> pd.DataFrame:
+    """Hitung Speedup relatif (baseline P=3 node) dan Efficiency untuk upload & pemulihan.
+
+    Catatan: P=3 digunakan sebagai baseline (bukan P=1) karena eksperimen memakai RF=2
+    dan membutuhkan minimal 3 node agar re-replication memiliki node target saat 1 node mati.
+    Scale factor relatif = P / 3, sehingga:
+      - Speedup relatif  S_rel = T_base(P=3) / T(P)
+      - Efficiency relatif E_rel = S_rel / (P / 3)
+    Untuk waktu pemulihan n=3 digunakan rata-rata 3 run dari summary_ulang.csv.
+    """
+    rows = []
+    for strat_key, _short, _label in STRATEGIES:
+        sub_s = summary_df[summary_df["strategi"] == strat_key].set_index("nodes")
+        sub_r = repeat_df[repeat_df["strategi"] == strat_key].set_index("nodes")
+        if 3 not in sub_s.index or 3 not in sub_r.index:
+            continue
+
+        base_up_thr = float(sub_s.loc[3, "avg_throughput_mbps"])
+        base_rec_s = float(sub_r.loc[3, "waktu_pemulihan_mean"])
+
+        for n in NODE_COUNTS:
+            if n not in sub_s.index or n not in sub_r.index:
+                continue
+            up_thr = float(sub_s.loc[n, "avg_throughput_mbps"])
+            rec_s = float(sub_r.loc[n, "waktu_pemulihan_mean"])
+            scale_p = n / 3.0
+
+            # Upload: T berbanding terbalik dengan throughput (T_3 / T_n = thr_n / thr_3)
+            s_up = up_thr / base_up_thr if base_up_thr > 0 else np.nan
+            e_up = s_up / scale_p if not pd.isna(s_up) else np.nan
+
+            # Pemulihan: S_rel = T_rec(3) / T_rec(n)
+            s_rec = base_rec_s / rec_s if rec_s > 0 else np.nan
+            e_rec = s_rec / scale_p if not pd.isna(s_rec) else np.nan
+
+            rows.append(
+                {
+                    "strategi": strat_key,
+                    "nodes": n,
+                    "scale_factor_vs_n3": round(scale_p, 4),
+                    "upload_throughput_mbps": round(up_thr, 4),
+                    "upload_speedup_rel": round(s_up, 4),
+                    "upload_efficiency_rel": round(e_up, 4),
+                    "recovery_time_s": round(rec_s, 3),
+                    "recovery_speedup_rel": round(s_rec, 4),
+                    "recovery_efficiency_rel": round(e_rec, 4),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
+def plot_speedup_efficiency(se_df: pd.DataFrame, out_path: Path):
+    """Plot Speedup & Efficiency relatif (baseline 3 node) untuk waktu pemulihan dan upload."""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.2, 4.8))
+
+    # Panel kiri: Speedup relatif waktu pemulihan
+    ideal_x = NODE_COUNTS
+    ideal_s = [n / 3.0 for n in NODE_COUNTS]
+    ax1.plot(ideal_x, ideal_s, linestyle="--", color="#888888", linewidth=1.4, label="Ideal Linear (P/3)")
+
+    for strat_key, _short, label in STRATEGIES:
+        sub = se_df[se_df["strategi"] == strat_key].sort_values("nodes")
+        if sub.empty:
+            continue
+        ax1.plot(
+            sub["nodes"],
+            sub["recovery_speedup_rel"],
+            marker=MARKERS[strat_key],
+            linewidth=2.1,
+            markersize=7,
+            label=label,
+            color=COLORS[strat_key],
+        )
+        for _, r in sub.iterrows():
+            ax1.annotate(
+                f"{r['recovery_speedup_rel']:.2f}x",
+                (r["nodes"], r["recovery_speedup_rel"]),
+                textcoords="offset points",
+                xytext=(0, 7),
+                ha="center",
+                fontsize=8,
+                color=COLORS[strat_key],
+            )
+
+    ax1.set_title("Speedup Relatif Pemulihan (Baseline 3 Node)", pad=10, fontsize=11)
+    ax1.set_xlabel("Jumlah Data Node")
+    ax1.set_ylabel("Speedup Relatif (S = T₃ / Tₙ)")
+    ax1.set_xticks(NODE_COUNTS)
+    ax1.set_xticklabels([f"{n} Node" for n in NODE_COUNTS])
+    ax1.spines["top"].set_visible(False)
+    ax1.spines["right"].set_visible(False)
+    ax1.legend(frameon=True, fontsize=8.5, loc="upper left")
+
+    # Panel kanan: Efficiency relatif (Upload vs Pemulihan — rata-rata 3 strategi per ukuran node)
+    avg_by_n = se_df.groupby("nodes")[["upload_efficiency_rel", "recovery_efficiency_rel"]].mean().reindex(NODE_COUNTS)
+    x = np.arange(len(NODE_COUNTS))
+    w = 0.34
+    b1 = ax2.bar(
+        x - w / 2,
+        avg_by_n["recovery_efficiency_rel"].values,
+        w,
+        label="Efisiensi Pemulihan",
+        color="#2A9D8F",
+        edgecolor="white",
+    )
+    b2 = ax2.bar(
+        x + w / 2,
+        avg_by_n["upload_efficiency_rel"].values,
+        w,
+        label="Efisiensi Upload (Single-Host)",
+        color="#3D5A80",
+        edgecolor="white",
+    )
+    ax2.axhline(1.0, linestyle="--", color="#888888", linewidth=1.2, label="Ideal (E = 1,00)")
+    for bars in (b1, b2):
+        for bar in bars:
+            h = bar.get_height()
+            ax2.text(
+                bar.get_x() + bar.get_width() / 2,
+                h + 0.03,
+                f"{h:.2f}",
+                ha="center",
+                va="bottom",
+                fontsize=8.5,
+            )
+
+    ax2.set_title("Rata-rata Efisiensi Relatif (E = S / (P/3))", pad=10, fontsize=11)
+    ax2.set_xlabel("Jumlah Data Node")
+    ax2.set_ylabel("Efisiensi Relatif (E)")
+    ax2.set_xticks(x)
+    ax2.set_xticklabels([f"{n} Node" for n in NODE_COUNTS])
+    max_e = float(max(avg_by_n["recovery_efficiency_rel"].max(), avg_by_n["upload_efficiency_rel"].max(), 1.0))
+    ax2.set_ylim(0, max_e * 1.40)
+    ax2.spines["top"].set_visible(False)
+    ax2.spines["right"].set_visible(False)
+    ax2.legend(frameon=True, fontsize=8.5, loc="upper right")
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=200)
+    plt.close(fig)
+
+
 def main() -> int:
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     setup_style()
 
     summary_df, repeat_df, notes = load_summary()
+    se_df = compute_speedup_efficiency(summary_df, repeat_df)
     out_csv = DATA_DIR / "summary.csv"
     out_rep_csv = DATA_DIR / "summary_ulang.csv"
+    out_se_csv = DATA_DIR / "speedup_efficiency.csv"
     summary_df.to_csv(out_csv, index=False)
     repeat_df.to_csv(out_rep_csv, index=False)
+    se_df.to_csv(out_se_csv, index=False)
 
     plot_grouped_bar(
         summary_df,
@@ -606,14 +754,26 @@ def main() -> int:
     )
     plot_scalability(summary_df, FIG_DIR / "04_scalability_throughput.png")
     plot_hetero_figures(notes)
+    plot_grouped_bar(
+        summary_df,
+        "avg_chunk_latency_ms",
+        "Perbandingan Latensi / Waktu Akses per Chunk (RF=2, Chunk 4 MB)",
+        "Rata-rata Latensi per Chunk (ms)",
+        FIG_DIR / "07_latensi_waktu_akses.png",
+        fmt="{:.2f}",
+    )
+    plot_speedup_efficiency(se_df, FIG_DIR / "08_speedup_efficiency.png")
 
     print(f"Ringkasan utama disimpan ke:     {out_csv}")
     print(f"Ringkasan pengulangan ke:        {out_rep_csv}")
+    print(f"Speedup & efficiency ke:         {out_se_csv}")
     print(f"Grafik disimpan ke:              {FIG_DIR}")
     print("\n--- Ringkasan 9 Skenario Utama ---")
     print(summary_df.to_string(index=False))
     print("\n--- Ringkasan Pengulangan (summary_ulang.csv) ---")
     print(repeat_df.to_string(index=False))
+    print("\n--- Speedup & Efficiency Relatif (baseline 3 node) ---")
+    print(se_df.to_string(index=False))
 
     if notes:
         print("\nCatatan validasi:")
