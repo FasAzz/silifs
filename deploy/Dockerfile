@@ -9,5 +9,6 @@ COPY common/ common/
 COPY master/ master/
 COPY datanode/ datanode/
 COPY client/ client/
+COPY monitoring/ monitoring/
 
 ENV PYTHONUNBUFFERED=1
