@@ -220,6 +220,7 @@ Get-FileHash hasil.bin -Algorithm SHA256
 | 5 node homogen | `deploy/dockerCompose.5.yml` | `docker compose -f deploy/dockerCompose.5.yml up -d --build` |
 | 8 node homogen | `deploy/dockerCompose.8.yml` | `docker compose -f deploy/dockerCompose.8.yml up -d --build` |
 | 5 node heterogen | `deploy/dockerCompose.hetero.yml` | `docker compose -f deploy/dockerCompose.hetero.yml up -d --build` |
+| 3 node + dashboard web (demo) | `deploy/dockerCompose.demo.yml` | `docker compose -f deploy/dockerCompose.demo.yml up -d --build` |
 
 Pada topologi heterogen, `node1` memiliki kapasitas virtual 1.024 MB, sedangkan node lain 8.192 MB.
 
@@ -253,16 +254,20 @@ docker compose -f deploy/dockerCompose.yml down -v
 
 ## Monitoring
 
-Jalankan dashboard dari root proyek ketika sistem lokal aktif:
+Dashboard web interaktif Flask tersedia di [http://localhost:8080](http://localhost:8080) (endpoint JSON di [http://localhost:8080/api/status](http://localhost:8080/api/status)) untuk memantau status node, sebaran chunk, pemakaian kapasitas, riwayat operasi client, serta melakukan **upload, download, dan verifikasi SHA-256 langsung dari browser**.
+
+**Cara termudah (Docker Compose terintegrasi):**
+
+```powershell
+docker compose -f deploy/dockerCompose.demo.yml up -d --build
+```
+
+**Mode lokal (tanpa Docker):**
 
 ```powershell
 python -m monitoring.app --port 8080 --data-dir data `
   --metrics-csv experiments\results\client_metrics.csv
 ```
-
-Buka [http://localhost:8080](http://localhost:8080). Endpoint JSON tersedia di [http://localhost:8080/api/status](http://localhost:8080/api/status).
-
-Dashboard membaca jumlah chunk dan pemakaian direktori data, mengecek keterjangkauan port data node, serta menampilkan metrik operasi terbaru. Untuk deployment Docker, jalankan monitoring pada lingkungan yang dapat melihat direktori volume dan hostname/container data node yang sesuai.
 
 ## Pengujian
 
@@ -324,7 +329,7 @@ Manifest untuk Kubernetes sudah disiapkan sebagai bonus di `deploy/k8s/`:
 - `datanode.yaml`: StatefulSet data node dengan headless Service dan PVC 2 GiB per pod.
 - `client-job.yaml`: Job *smoke test* upload/download dan verifikasi SHA-256.
 
-Panduan lengkap ada di [deploy/k8s/README.md](deploy/k8s/README.md). Statusnya **belum diuji langsung menggunakan `kind`**, sehingga deployment ini sebaiknya diperlakukan sebagai manifest persiapan, bukan hasil benchmark.
+Panduan lengkap dan potongan log pengujian tersedia di [deploy/k8s/README.md](deploy/k8s/README.md). Manifest ini telah **teruji end-to-end pada `kind v0.33.0`** (4 pod `Running`, upload/download 50 MB dengan SHA-256 identik, *self-healing* `kubectl delete pod datanode-1`, serta *scaling* `StatefulSet` ke 5 data node). Deployment `kind` ini ditujukan sebagai pembuktian fungsionalitas dan *scaling*, bukan benchmark performa.
 
 ## Struktur proyek
 

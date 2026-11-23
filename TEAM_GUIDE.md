@@ -23,7 +23,7 @@
 - [x] Eksperimen skala penuh di Docker: 9 skenario utama (homogen, 100 file @ 50 MB, `HEARTBEAT_TIMEOUT = 30 s`), 3 skenario kapasitas heterogen (`node1=1 GB`, `node2..5=8 GB`), dan pengulangan 3x untuk `n=3` (`experiments/data/`, `docs/hasil_eksperimen.md`)
 - [ ] Variasi RF (1, 2, 3) dan chunk size (1, 4, 8 MB) dengan beban kecil
 - [ ] Laporan IEEE 6 bab, video demo maksimal 10 menit, README final (Fajar)
-- [ ] Bonus: Kubernetes (`kind`) — manifest `deploy/k8s/` sudah disiapkan (belum diuji, menunggu instalasi `kind`) dan integrasi dashboard (Fasha dan Azhar)
+- [x] Bonus: Kubernetes (`kind`) teruji end-to-end (`deploy/k8s/`) dan integrasi dashboard web interaktif ke Docker (`deploy/dockerCompose.demo.yml`, `monitoring/app.py`) (Fasha dan Azhar)
 
 ## Setup
 

@@ -7,7 +7,7 @@ Dokumen ini menyajikan hasil eksperimen perbandingan tiga strategi penempatan re
 ## 1. Metodologi dan Lingkungan Eksperimen
 
 - **Lingkungan host**:
-  - Spesifikasi fisik laptop: `[AMD Ryzen 5 5500U with Nvidia GeForce RTX 3050]` (versi Windows: `Windows 11 Pro`).
+  - Spesifikasi fisik laptop: `AMD Ryzen 5 5500U with Nvidia GeForce RTX 3050` (versi Windows: `Windows 11 Pro`).
   - Engine Docker: Docker Desktop versi `29.9.2` (alokasi engine tercatat via `docker info`: `12` vCPU, `7,44 GiB` RAM).
 - **Konfigurasi beban utama (homogen)**: 100 file biner acak berukuran 50 MB per file (total 5.000 MB data logis), *replication factor* `RF = 2`, ukuran chunk `4 MB` (13 chunk per file → 1.300 chunk unik atau **2.600 replika** per skenario).
   - Strategi: `random` (`rnd`), `round_robin` (`rr`), `capacity_aware` (`cap`).
@@ -60,6 +60,44 @@ Sumber data: [summary.csv](../experiments/data/summary.csv), [load_balance.csv](
 
 - **Fakta dari data**: Penambahan jumlah node dari 3 ke 5 dan 8 node tidak menaikkan throughput upload secara linear: Round-Robin `45,19 → 46,47 → 46,80 MB/s` (`+3,6%`), Capacity-Aware `43,43 → 44,42 → 46,52 MB/s` (`+7,1%`), dan Random `43,72 → 45,18 → 42,32 MB/s`.
 - **Dugaan penyebab**: Seluruh data node berbagi satu disk fisik dan CPU di host tunggal, sementara skrip pengujian hanya menjalankan satu client secara berurutan (tanpa konkurensi multi-client). Sebaliknya, manfaat penambahan node terlihat jelas pada penurunan jumlah chunk per node dan waktu pemulihan.
+- **Catatan pemilihan ukuran klaster `(3, 5, 8)`**: Pengujian skalabilitas memakai 3, 5, dan 8 node (bukan 2, 4, 8, 16) karena dengan `RF = 2`, minimal **3 node** diperlukan agar re-replication memiliki node target pengganti saat 1 node mati, sedangkan batas atas **8 node** menyesuaikan alokasi memori Docker host (~7,44 GiB RAM) agar 16 container tidak menimbulkan kontensi berlebihan pada satu laptop.
+
+### 2.4 Latensi / Waktu Akses per Chunk & Uji Download 100 File (50 MB)
+
+![Perbandingan Latensi per Chunk](figures/07_latensi_waktu_akses.png)
+
+- **Fakta dari data (9 skenario utama)**: Rata-rata waktu akses (*latency*) penulisan per chunk 4 MB berada pada rentang sempit **`29,18–32,61 ms/chunk`** di seluruh 9 skenario (`Round-Robin` terendah pada setiap ukuran klaster: `30,52`, `29,39`, dan `29,18 ms/chunk`).
+- **Fakta dari uji tambahan Upload + Download 100 File @ 50 MB** (`rr`, `RF=2`, chunk `4 MB`, 3 node; sumber: [upload_download_100_rr_rf2_c4_n3.csv](../experiments/data/upload_download_100_rr_rf2_c4_n3.csv)):
+
+| Operasi (3 Node, Round-Robin, RF=2) | Jumlah File Berhasil | Durasi Rata-rata (s/file) | Throughput Rata-rata (MB/s) | Latensi Chunk Rata-rata (ms) |
+|---|---:|---:|---:|---:|
+| Upload (100 file × 50 MB) | **100 / 100** | 1,69 ± 0,43 | 30,95 ± 6,03 | 46,18 ± 13,14 |
+| Download (100 file × 50 MB) | **100 / 100** | **0,76 ± 0,43** | **74,90 ± 18,75** | 51,93 ± 32,49 |
+
+- **Dugaan penyebab**: Throughput download (`74,90 MB/s`) tercatat ~2,4× lebih tinggi dibanding upload (`30,95 MB/s`) pada sesi yang sama karena operasi download hanya membaca **1 replika** per chunk (tanpa menulis ganda `RF = 2` ke disk dan memanfaatkan *page cache* sistem operasi).
+
+### 2.5 Analisis Speedup dan Efficiency Relatif
+
+Karena konfigurasi `RF = 2` dengan pengujian re-replication membutuhkan minimal 3 node, **Speedup relatif** dihitung terhadap baseline klaster terkecil $P_{\text{base}} = 3$ node dengan faktor skala $P / 3$: $S_{\text{rel}} = T_3 / T_P$ dan $E_{\text{rel}} = S_{\text{rel}} / (P / 3)$ (untuk waktu pemulihan $n=3$ digunakan rata-rata 3 pengulangan dari `summary_ulang.csv`). Sumber data: [speedup_efficiency.csv](../experiments/data/speedup_efficiency.csv).
+
+| Strategi | Node ($P$) | Faktor Skala ($P/3$) | Speedup Upload ($S_{\text{up}}$) | Efisiensi Upload ($E_{\text{up}}$) | Speedup Pemulihan ($S_{\text{rec}}$) | Efisiensi Pemulihan ($E_{\text{rec}}$) |
+|---|---:|---:|---:|---:|---:|---:|
+| Random | 3 | 1,00 | 1,00× | 1,00 | 1,00× | 1,00 |
+| Random | 5 | 1,67 | 1,03× | 0,62 | 2,28× | 1,37 |
+| Random | 8 | 2,67 | 0,97× | 0,36 | 3,47× | 1,30 |
+| Round-Robin | 3 | 1,00 | 1,00× | 1,00 | 1,00× | 1,00 |
+| Round-Robin | 5 | 1,67 | 1,03× | 0,62 | 3,29× | 1,98 |
+| Round-Robin | 8 | 2,67 | 1,04× | 0,39 | 5,87× | 2,20 |
+| Capacity-Aware | 3 | 1,00 | 1,00× | 1,00 | 1,00× | 1,00 |
+| Capacity-Aware | 5 | 1,67 | 1,02× | 0,61 | 2,14× | 1,29 |
+| Capacity-Aware | 8 | 2,67 | 1,07× | 0,40 | 3,12× | 1,17 |
+
+![Speedup dan Efisiensi Relatif](figures/08_speedup_efficiency.png)
+
+- **Fakta dari data**:
+  - **Upload**: Speedup relatif hampir datar (`0,97–1,07×`), sehingga efisiensi relatif turun dari `1,00` (3 node) menjadi `~0,62` (5 node) dan `~0,38` (8 node).
+  - **Pemulihan**: Speedup relatif meningkat tajam hingga `2,14–3,29×` (5 node) dan `3,12–5,87×` (8 node), melampaui faktor skala linear `P/3` (`E > 1,00`).
+- **Dugaan penyebab**: Pada upload, efisiensi menurun seiring $P$ sesuai hukum Amdahl karena bottleneck disk tunggal host dan eksekusi satu client sekuensial. Pada pemulihan, speedup super-linear (`E > 1`) diduga berasal dari berkurangnya jumlah chunk yang dipulihkan per node ($\approx 2600/P$) sekaligus berkurangnya tekanan I/O berkepanjangan pada 2 node tersisa (khususnya pada baseline `rr_n3` yang memiliki lonjakan waktu pemulihan pada run 2–3).
 
 ---
 
@@ -129,15 +167,23 @@ Untuk menguji keunggulan Capacity-Aware pada klaster tidak seragam, dijalankan s
 
 ---
 
-## 6. Bonus Kubernetes (Status Persiapan)
+## 6. Bonus Kubernetes (`kind`) — Hasil Uji Fungsional
 
-Manifest Kubernetes telah disiapkan di [deploy/k8s/](../deploy/k8s/README.md) (`master.yaml`, `datanode.yaml` StatefulSet 3 replika dengan PVC 2 GiB, `client-job.yaml`, dan `README.md`). Pengujian langsung di cluster `kind` **belum dijalankan** karena tool `kind` belum terpasang di laptop pengujian; panduan pemasangan dan skenario uji (4 pod Running, upload/download 50 MB + SHA-256, `kubectl delete pod datanode-1`, dan scaling ke 5 replika) terdokumentasi di [deploy/k8s/README.md](../deploy/k8s/README.md).
+Manifest Kubernetes di [deploy/k8s/](../deploy/k8s/README.md) (`master.yaml`, `datanode.yaml` StatefulSet dengan PVC 2 GiB, `client-job.yaml`) telah diuji pada `kind v0.33.0` (`kindest/node:v1.37.0`) menggunakan image `silifs:latest`:
+
+- **Fakta hasil uji**:
+  - Keempat pod (`master`, `datanode-0..2`) mencapai status `1/1 Running` dan ketiganya terdaftar di master (`datanode-0..2.datanode:50052`).
+  - `Job` `silifs-smoke-test` berhasil mengunggah file acak `50 MB` (`4,13 s`, `12,10 MB/s`, `RF=2`, `round_robin`) dan mengunduhnya kembali (`3,73 s`, `13,41 MB/s`) dengan hash SHA-256 identik (`4a66d1c4...85476c`).
+  - `kubectl delete pod datanode-1` membuktikan *self-healing* `StatefulSet`: pod dibuat ulang dalam hitungan detik dengan PVC yang sama dan langsung mendaftar ulang ke master.
+  - `kubectl scale statefulset datanode --replicas=5` berhasil menambah klaster menjadi 5 data node (`datanode-0..4` semua `1/1 Running` dan terdaftar di master).
+  - Cluster dibersihkan kembali setelah pengujian (`kind delete cluster --name silifs`).
+- **Batasan**: Pengujian `kind` hanya bertujuan memverifikasi fungsionalitas *deployment*, *self-healing* pod, dan *scaling* `StatefulSet` (bukan benchmark performa karena seluruh pod dan PVC tetap berjalan di satu laptop). Selain itu, karena restart pod `StatefulSet` jauh lebih cepat dari `HEARTBEAT_TIMEOUT = 30 s` (dan `terminationGracePeriodSeconds` bawaan pod sebesar 30 s), simulasi re-replication penuh tetap mengacu pada eksperimen Docker Compose.
 
 ---
 
 ## 7. Batasan Eksperimen
 
-1. **Eksekusi satu laptop (single-host Docker)**: Seluruh container berjalan di satu host fisik (Docker `29.9.2`, spesifikasi fisik `[AMD Ryzen 5 5500U with Nvidia GeForce RTX 3050]`) dengan jaringan bridge lokal, sehingga latensi jaringan sangat kecil dan seluruh node memperebutkan CPU serta disk fisik yang sama.
+1. **Eksekusi satu laptop (single-host Docker)**: Seluruh container berjalan di satu host fisik (Docker `29.9.2`, spesifikasi fisik `AMD Ryzen 5 5500U with Nvidia GeForce RTX 3050`) dengan jaringan bridge lokal, sehingga latensi jaringan sangat kecil dan seluruh node memperebutkan CPU serta disk fisik yang sama.
 2. **Kapasitas homogen pada 9 skenario utama**: Pada rangkaian 9 skenario utama, seluruh node memakai `--capacity-mb 8192`; keunggulan Capacity-Aware baru tampak ketika diuji pada skenario heterogen (`node1=1024 MB`).
 3. **Strategi Random tidak di-seed**: Tanpa `random.seed` tetap, distribusi chunk dan jumlah chunk di `node2` berbeda antar eksekusi.
 4. **Jumlah pengulangan terbatas**: Pengulangan 3× baru dilakukan pada konfigurasi `n=3`; konfigurasi `n=5`, `n=8`, dan heterogen baru 1 pengulangan (`n=1`).
